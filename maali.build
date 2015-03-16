@@ -1,0 +1,44 @@
+##############################################################################
+# maali build file for maali
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="binary"
+
+# URL to download the source code from
+MAALI_URL=""
+
+# location we are downloading the source code to
+MAALI_DST="./maali"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR=""
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="tools"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_MAALI_USER_MAP='$MAALI_APP_HOME/share/user.map'
+
+##############################################################################
+
+function maali_unpack {
+  echo "Self-installing maali does not require unpacking"
+}
+
+##############################################################################
+
+function maali_build {
+  maali_run "mkdir $MAALI_INSTALL_DIR/bin"
+  maali_run "install -m 755 maali $MAALI_INSTALL_DIR/bin"
+
+  # set the version number
+  sed -i -e 's/MAALI_VERSION="tip"/MAALI_VERSION="'$MAALI_TOOL_VERSION'"/g' $MAALI_INSTALL_DIR/bin/maali
+
+  # copy the config file and make it a system build
+  maali_run "install -m 644 $MAALI_MAALI_CONFIG_FILEPATH $HOME/.maali/$MAALI_OS.config"
+  sed -i -e 's/#MAALI_SYSTEM_BUILD/MAALI_SYSTEM_BUILD/g' $HOME/.maali/$MAALI_OS.config
+}
+
+##############################################################################
