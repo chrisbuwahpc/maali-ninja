@@ -1,0 +1,56 @@
+##############################################################################
+# $Id: abyss.ibs,v 1.3 2014/09/26 08:43:59 stapops Exp $
+##############################################################################
+# ibs config file for ABySS
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="https://github.com/bcgsc/$IBS_TOOL_NAME/releases/download/$IBS_TOOL_VERSION/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+IBS_TOOL_PREREQ="$IBS_DEFAULT_MPI sparsehash/1.12"
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+IBS_MODULE_SET_MANPATH=1
+
+##############################################################################
+#
+function ibs_build {
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  # See https://groups.google.com/forum/#!msg/abyss-users/jnOlYfsamsg/XTowVu6vyVMJ
+  export CPPFLAGS="-I$IBS_SPAREHASH_HOME/include"
+  export CFLAGS="-DMPI_NO_CPPBIND"
+  export CXXFLAGS="-DMPI_NO_CPPBIND"
+
+  # need our own copy of boost to compile
+  if [ ! -f "$IBS_SRC/boost_1_49_0.tar.bz2" ]; then
+    wget -O "$IBS_SRC/boost_1_49_0.tar.bz2" -q http://downloads.sourceforge.net/project/boost/boost/1.49.0/boost_1_49_0.tar.bz2
+  fi
+
+  cp "$IBS_SRC/boost_1_49_0.tar.bz2" .
+  tar jxf boost_1_49_0.tar.bz2
+  ln -s boost_1_49_0/boost boost
+
+  ibs_run "./configure --prefix=$IBS_INSTALL_DIR --with-mpi=$MPI_ROOT --disable-openmp"
+
+  find /ivec/sles11sp3/build/abyss-1.5.1 -name Makefile | xargs -n1 -i sed -i -e 's/-Wall -Wextra -Werror/-Wall -Wextra/g' {}
+
+  ibs_run "make"
+  ibs_run "make install"
+}
+
+##############################################################################

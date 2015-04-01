@@ -1,0 +1,60 @@
+##############################################################################
+# ibs config file for plink cray
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+#IBS_URL="http://pngu.mgh.harvard.edu/~purcell/plink/dist/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src.zip"
+IBS_URL="https://github.com/chrchang/plink-ng/archive/master.zip"
+
+# location we are downloading the source code to
+#IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.zip"
+IBS_DST="$IBS_SRC/master.zip"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+#IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-ng-master"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites modules needed to install this new tool/package
+IBS_TOOL_PREREQ="lapack/3.4.2 zlib/1.2.7"
+
+# add additional configure options
+IBS_TOOL_CONFIGURE=""
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+IBS_MODULE_PATH=1
+IBS_MODULE_WHATIS="PLINK is a whole genome association analysis toolset, designed to perfrom a range fo basic, large-scale analyses in a computationally efficient manner."
+
+##############################################################################
+
+function ibs_build {
+
+  cd "$IBS_SRC"
+  mv master.zip plink-1.9.zip
+  cd "$IBS_BUILD_DIR"
+  mv -f plink-ng-master/ plink-1.9/
+
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  cp Makefile.std Makefile
+  sed -i 's;BLASFLAGS=-L/usr/lib64/atlas -llapack -lcblas -latlas;BLASFLAGS=-L$(LAPACK)/lib -llapack;g' Makefile
+  sed -i 's;ZLIB=zlib-1.2.8/libz.so.1.2.8;ZLIB=$(IBS_ZLIB_HOME)/lib/libz.so.1.2.7;g' Makefile
+  sed -i 's;g++ $(CFLAGS) $(SRC) -o plink $(BLASFLAGS) $(LINKFLAGS) -L. $(ZLIB);CC -dynamic $(CFLAGS) $(SRC) -o plink $(BLASFLAGS) $(LINKFLAGS) -L. $(ZLIB);g' Makefile
+
+  sed -i 's/zlib-1.2.8\/zlib.h/zlib.h/g' dose2plink.c
+  sed -i 's/zlib-1.2.8\/zlib.h/zlib.h/g' pigz.c
+  sed -i 's/zlib-1.2.8\/zlib.h/zlib.h/g' plink_common.h
+  
+  ibs_run "make plink"
+
+  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
+  ibs_run "install -m 755 plink $IBS_INSTALL_DIR/bin/"
+}
+
+##############################################################################

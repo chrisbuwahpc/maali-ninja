@@ -1,0 +1,64 @@
+##############################################################################
+
+# specify which compilers we want to build the tool with
+# Works under Intel / Cray (bombs under gcc)
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+IBS_MD5_CHAR1=`echo -n ${IBS_TOOL_NAME_ORIG}.${IBS_TOOL_VERSION}.zip | md5sum | cut -d ' ' -f 1 | cut -c 1`
+IBS_MD5_CHAR1AND2=`echo -n ${IBS_TOOL_NAME_ORIG}.${IBS_TOOL_VERSION}.zip | md5sum | cut -d ' ' -f 1 | cut -c 1,2`
+IBS_URL="http://www.mothur.org/w/images/${IBS_MD5_CHAR1}/${IBS_MD5_CHAR1AND2}/Mothur.${IBS_TOOL_VERSION}.zip"
+IBS_URL="http://www.mothur.org/w/images/0/0c/Mothur.${IBS_TOOL_VERSION}.zip"
+#http://www.mothur.org/w/images/0/0c/Mothur.1.34.4.zip
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/${IBS_TOOL_NAME_ORIG}.$IBS_TOOL_VERSION.zip"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/${IBS_TOOL_NAME_ORIG}.source"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+IBS_EXTRA_CRAY="craype-sandybridge"
+
+# tool pre-requisites
+IBS_TOOL_PREREQ="cray-mpich"
+#IBS_TOOL_PREREQ="$IBS_DEFAULT_MPI"
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+
+##############################################################################
+
+function ibs_unpack {
+  cd $IBS_BUILD_DIR
+  unzip -o $IBS_DST -x '__MACOSX/*'
+}
+
+##############################################################################
+
+function ibs_build {
+
+  cd Mothur.source
+
+  # Perform gymnastics on the makefile before building
+  sed -i -e 's/USEMPI ?= no/USEMPI ?= yes/' makefile
+  sed -i -e 's/TARGET_ARCH += -arch x86_64/#TARGET_ARCH += -arch x86_64/' makefile
+  sed -i -e 's/#CXXFLAGS += -mtune=native -march=native/CXXFLAGS += -mtune=native -march=native/' makefile
+  sed -i -e 's/CXX = mpic++/CXX = CC/' makefile
+
+  cd "$IBS_TOOL_BUILD_DIR"
+  ibs_run "make"
+  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
+  ibs_run "install -m 755 mothur $IBS_INSTALL_DIR/bin/"
+  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin/lookupFiles/"
+
+  for file in `ls lookupFiles/*.*`
+  do
+    ibs_run "install -m 644 $file $IBS_INSTALL_DIR/bin/lookupFiles/"
+  done
+
+}
+
+##############################################################################

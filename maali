@@ -1,6 +1,6 @@
 #!/bin/bash
 ##############################################################################
-# iVEC Build System
+# Maali the build system for the Pawsey Supercomputing Centre resources.
 #
 # $Id: maali,v 1.163 2014/10/31 05:11:23 stapops Exp $
 ##############################################################################
@@ -126,7 +126,7 @@ EOF
 
 ##############################################################################
 
-function maali_load_module {
+function maali_load_module {                  
 
   maali_wiki "  .. loading $1"
   MAALI_MODULE_MISSING=`module display $1 2>&1 | grep 'Unable to locate a modulefile' | wc -l`
@@ -492,7 +492,7 @@ usage()
 cat << EOF
 usage: $0 -t toolname -v toolversion [-h] [-d] [-c maali config file] [-m] [-l] [-r compiler/version] [-b]
 
-maali - iVEC Build System
+maali - A build system tool from the Pawsey Supercomputing Centre
 
 OPTIONS:
    -h      show this message
@@ -914,12 +914,12 @@ if [ "$MAALI_SYSTEM_BUILD" == "YES" ]; then
 * '''Install Date''': $MAALI_INSTALL_DATE
 * '''Compiler''': $MAALI_WIKI_COMPILER_STRING
 * '''Compile Machine''': $HOSTNAME
-* '''iVEC Staff''': [mailto:$MAALI_BUILDER_BUILD_MAIL $MAALI_BUILDER_BUILD_CN]
+* '''Pawsey Supercomputing Centre Staff''': [mailto:$MAALI_BUILDER_BUILD_MAIL $MAALI_BUILDER_BUILD_CN]
 
 
 === Compile and Installation ===
 
-Compiled using iVEC Build System $MAALI_VERSION:
+Compiled using Maali $MAALI_VERSION:
 
 <pre>
 $ maali $MAALI_CMDLINE

@@ -1,0 +1,65 @@
+##############################################################################
+# ibs config file for plink cray
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="http://pngu.mgh.harvard.edu/~purcell/plink/dist/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src.zip"
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src.zip"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites modules needed to install this new tool/package
+IBS_TOOL_PREREQ="lapack/3.4.2 zlib/1.2.7"
+
+# add additional configure options
+IBS_TOOL_CONFIGURE=""
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+IBS_MODULE_PATH=1
+IBS_MODULE_WHATIS="PLINK is a whole genome association analysis toolset, designed to perfrom a range fo basic, large-scale analyses in a computationally efficient manner."
+
+##############################################################################
+
+function ibs_build {
+
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  sed -i 's/CXX_UNIX = g++/CXX_UNIX = CC/g' Makefile
+  sed -i 's/CXXFLAGS =/CXXFLAGS = -dynamic/g' Makefile
+  sed -i 's/WITH_LAPACK =/WITH_LAPACK = 1/g' Makefile
+  sed -i 's/LIB_LAPACK = \/usr\/lib\/liblapack.so.3/LIB_LAPACK = \$\(LAPACK)\/lib\/liblapack.so/g' Makefile
+  sed -i 's/FORCE_DYNAMIC =/FORCE_DYNAMIC = 1/g' Makefile
+  sed -i 's/LIB += -lz/LIB += -L\$\(IBS_ZLIB_HOME)\/lib -lz/g' Makefile
+
+
+  sed -i '771s/iterator i/iterator i2/g' sets.cpp
+  sed -i '772s/i !=/i2 !=/g' sets.cpp
+  sed -i '774s/(\*i)/(\*i2)/g' sets.cpp
+  sed -i '775s/++i/++i2/g' sets.cpp
+
+
+  sed -i '1178s/iterator i/iterator i2/g' elf.cpp
+  sed -i '1179s/i !=/i2 !=/g' elf.cpp
+  sed -i '1181s/i->/i2->/g' elf.cpp
+  sed -i '1191s/++i/++i2/g' elf.cpp
+
+  sed -i '772s/ for (int j = 0 ; j < jointField.size(); j++ )/ for (int jj = 0 ; jj < jointField.size(); jj++ )/g' idhelp.cpp
+  sed -i '774s/\[j\]/\[jj\]/g' idhelp.cpp
+
+  ibs_run "make"
+
+  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
+  ibs_run "install -m 755 plink $IBS_INSTALL_DIR/bin/"
+}
+
+##############################################################################
