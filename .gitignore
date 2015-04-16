@@ -2,3 +2,7 @@ CVS
 *.ibs
 *.ibs~
 *.build~
+logs
+wiki
+rebuild
+
