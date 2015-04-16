@@ -1,0 +1,30 @@
+##############################################################################
+# maali config file for exabayes 
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_INTEL_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://mirror.ventraip.net.au/apache//xerces/c/3/sources/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="${MAALI_SRC}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="${MAALI_BUILD_DIR}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--disable-network --with-pic CXX=c++ CC=cc'
+
+##############################################################################
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_SET_CPATH=1
+
