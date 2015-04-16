@@ -1,0 +1,39 @@
+##############################################################################
+# $Id: libffi.build,v 1.3 2014/10/22 00:50:39 stapops Exp $
+##############################################################################
+# maali config file for libffi
+##############################################################################
+
+#3.1
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS $MAALI_DEFAULT_INTEL_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="ftp://sourceware.org/pub/${MAALI_TOOL_NAME}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+#MAALI_TOOL_PREREQ=""
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=' '
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH='lib64'
+
+MAALI_MODULE_WHATIS="The libffi library provides a portable, high level programming interface to various calling conventions.  This allows a programmer to call any function specified by a call interface description at run-time."
+
+##############################################################################

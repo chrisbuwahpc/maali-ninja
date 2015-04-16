@@ -1,0 +1,25 @@
+##############################################################################
+# $Id: astropy.build,v 1.1 2014/10/24 09:01:37 stapops Exp $
+##############################################################################
+# maali config file for astropy
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_PYTHON"
+
+# URL to download the source code from
+MAALI_URL="https://pypi.python.org/packages/source/$MAALI_PYTHON_FIRSTLETTER/$MAALI_TOOL_NAME/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="distribute/0.6.49 numpy/1.6.2"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################

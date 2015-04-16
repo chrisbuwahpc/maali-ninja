@@ -1,0 +1,287 @@
+##############################################################################
+# $Id: gsl.build,v 1.7 2015/03/17 02:58:19 stapops Exp $
+##############################################################################
+# maali config file for gsl
+##############################################################################
+
+# Works with GSL 1.16 & 1.15
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://mirror.aarnet.edu.au/pub/gnu/gsl/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# Explicitly setting gcc in order to compile on all 3 environments
+MAALI_TOOL_CONFIGURE='CC=gcc CXX=CC'
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_WHATIS="The GNU Scientific Library (GSL) is a numerical library for C and C++ programmers."
+MAALI_MODULE_SET_SETENV="GSL_DIR=\$MAALI_APP_HOME"
+
+##############################################################################
+
+function maali_module {
+
+  if [ $MAALI_PYTHON_TOOL ]; then
+    MAALI_APP_HOME="$MAALI_ROOT/python/\$env(PYTHON_VERSION)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION"
+    MAALI_SYSTEM_DEFAULT_PYTHON=`module display python 2>&1 | head -2 | tail -1 | rev | cut -d '/' -f 1 | rev | cut -d ':' -f 1`
+    MAALI_APP_HOME_NAME="MAALI_"$MAALI_TOOL_NAME_UPPERCASE"_HOME"
+  else
+    if [ $MAALI_COMPILER_NUMBER -eq 1 ]; then
+      MAALI_APP_HOME=$MAALI_INSTALL_DIR
+    else
+      if [[ $IVEC_OS =~ cle ]]; then
+        MAALI_APP_HOME="$MAALI_APPS_DIR/\$cray_compiler/\$cray_version/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION"
+      else
+        MAALI_APP_HOME="$MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION"
+      fi
+    fi
+    MAALI_APP_HOME_NAME="MAALI_"$MAALI_TOOL_NAME_UPPERCASE"_HOME"
+  fi
+
+  cat <<EOF >$MAALI_TOOL_MODULE
+#%Module######################################################################
+#
+# $MAALI_TOOL_NAME modulefile
+#
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths you need to use $MAALI_TOOL_NAME version $MAALI_TOOL_VERSION"
+}
+set sys     [uname sysname]
+set version $MAALI_TOOL_VERSION
+set tool    $MAALI_TOOL_NAME
+if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+  module unload \$tool
+}
+
+EOF
+
+  if [[ $IVEC_OS =~ cle ]]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+set cray_compiler PrgEnv-[string tolower \$env(PE_ENV)]
+set cray_version  \$env(CRAYOS_VERSION)
+
+EOF
+  fi
+
+  if [ $MAALI_PYTHON_TOOL ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+
+if {! [is-loaded python] } {
+  # this allows us support multiple python versions, but have a sensible default
+  module load python/$MAALI_SYSTEM_DEFAULT_PYTHON
+}
+EOF
+  fi
+
+  if [ "$MAALI_MODULE_CONFLICT" != "" ]; then
+      (IFS=","; for MAALI_PKG in $MAALI_MODULE_CONFLICT
+      do
+          cat <<EOF >> $MAALI_TOOL_MODULE
+conflict $MAALI_PKG
+EOF
+      done)
+  fi
+
+  if [ "$MAALI_MODULE_PREREQ" != "" ]; then
+      (IFS=","; for MAALI_PKG in $MAALI_MODULE_PREREQ
+      do
+          cat <<EOF >> $MAALI_TOOL_MODULE
+prereq $MAALI_PKG
+EOF
+      done)
+  fi
+
+  if [ "$MAALI_MODULE_WHATIS" != "" ]; then
+      cat <<EOF >> $MAALI_TOOL_MODULE
+module-whatis "$MAALI_MODULE_WHATIS"
+EOF
+  fi
+
+  for MAALI_TOOL_PREREQ_MODULE in $MAALI_TOOL_PREREQ; do
+    cat <<EOF >> $MAALI_TOOL_MODULE
+module load $MAALI_TOOL_PREREQ_MODULE
+EOF
+  done
+
+  if [ "$MAALI_MODULE_SET_SETENV" != "" ]; then
+    # MAALI_MODULE_SET_SETENV="LIBGL_ALWAYS_INDIRECT=y"
+    (IFS=","; for MAALI_SETENV_PAIR in $MAALI_MODULE_SET_SETENV
+      do
+      MAALI_SETENV_KEY=`echo $MAALI_SETENV_PAIR | cut -d '=' -f 1`
+      MAALI_SETENV_VALUE=`echo $MAALI_SETENV_PAIR | cut -d '=' -f 2`
+
+      # allows late evaluation
+      MAALI_SETENV_VALUE_EVAL=`eval echo "$MAALI_SETENV_VALUE"`
+
+      cat <<EOF >> $MAALI_TOOL_MODULE
+setenv $MAALI_SETENV_KEY "$MAALI_SETENV_VALUE_EVAL"
+EOF
+      done)
+  fi
+
+  cat <<EOF >> $MAALI_TOOL_MODULE
+
+setenv $MAALI_APP_HOME_NAME $MAALI_APP_HOME
+
+EOF
+
+  if [ "$MAALI_MODULE_SET_PATH" != "" ]; then
+    if [ "$MAALI_MODULE_SET_PATH" == "1" ]; then
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PATH               $MAALI_APP_HOME/bin
+EOF
+    elif [ "$MAALI_MODULE_SET_PATH" == "toplevel" ]; then
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PATH               $MAALI_APP_HOME
+EOF
+    else
+      for MAALI_MODULE_SET_PATH_LOCATION in $MAALI_MODULE_SET_PATH ; do
+        cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PATH               $MAALI_APP_HOME/$MAALI_MODULE_SET_PATH_LOCATION
+EOF
+      done
+    fi
+  fi
+
+  if [[ $MAALI_PYTHON_TOOL || $MAALI_MODULE_SET_PYTHONPATH ]]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PYTHONPATH         $MAALI_APP_HOME/\$env(MAALI_PYTHON_LIBDIR)/python\$env(PYTHON_LIB_VERSION)/site-packages
+EOF
+  fi
+
+
+  if [ $MAALI_MODULE_SET_LD_LIBRARY_PATH ]; then
+    if [ $MAALI_MODULE_SET_LD_LIBRARY_PATH == "1" ]; then
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path LD_LIBRARY_PATH    $MAALI_APP_HOME/lib
+EOF
+    else
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path LD_LIBRARY_PATH    $MAALI_APP_HOME/$MAALI_MODULE_SET_LD_LIBRARY_PATH
+EOF
+    fi
+  fi
+
+  if [ $MAALI_MODULE_SET_CRAY_LD_LIBRARY_PATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path CRAY_LD_LIBRARY_PATH    $MAALI_APP_HOME/lib
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_LD_PRELOAD ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path LD_PRELOAD    $MAALI_APP_HOME/lib/$MAALI_MODULE_SET_LD_PRELOAD
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_CPATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+if { ! [is-loaded PrgEnv-cray] } {
+  prepend-path CPATH              $MAALI_APP_HOME/include
+}
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_C_INCLUDE_PATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path C_INCLUDE_PATH     $MAALI_APP_HOME/include
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_CPLUS_INCLUDE_PATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path CPLUS_INCLUDE_PATH $MAALI_APP_HOME/include
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_FPATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path FPATH              $MAALI_APP_HOME/include
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_FCPATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path FCPATH             $MAALI_APP_HOME/include
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_INCLUDE_PATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path INCLUDE_PATH       $MAALI_APP_HOME/include
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_PKG_CONFIG_PATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PKG_CONFIG_PATH    $MAALI_APP_HOME/lib/pkgconfig
+EOF
+  fi
+
+  if [ "${MAALI_MODULE_PE_PKGCONFIG_NAME[*]}" ]; then
+    lmaali=`echo ${MAALI_MODULE_PE_PKGCONFIG_NAME[*]} | sed -e 's/ \+$//' -e 's/ \+/:/g'`
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PE_PKGCONFIG_LIBS    $libs
+EOF
+  fi
+
+  if [ $MAALI_MODULE_SET_MANPATH ]; then
+    cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path MANPATH            $MAALI_APP_HOME/share/man
+EOF
+  fi
+
+  # TODO: get perl version from perl
+  if [ $MAALI_MODULE_SET_PERLLIB ]; then
+    if [ $MAALI_MODULE_SET_PERLLIB == "1" ]; then
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PERLLIB            $MAALI_APP_HOME/lib/perl5/site_perl/5.10.1
+prepend-path PERL5LIB           $MAALI_APP_HOME/lib/perl5/site_perl/5.10.1
+EOF
+    else
+      cat <<EOF >> $MAALI_TOOL_MODULE
+prepend-path PERLLIB            $MAALI_APP_HOME/$MAALI_MODULE_SET_PERLLIB
+prepend-path PERL5LIB           $MAALI_APP_HOME/$MAALI_MODULE_SET_PERLLIB
+EOF
+    fi
+  fi
+
+  if [ "$MAALI_SYSTEM_BUILD" == "YES" ]; then
+    if [ "$MAALI_MODULE_RESTRICT_GROUP" != "" ]; then
+      maali_run "chmod 750 $MAALI_TOOL_MODULE_DIR"
+      maali_run "chgrp $MAALI_MODULE_RESTRICT_GROUP $MAALI_TOOL_MODULE_DIR"
+      maali_run "chmod 640 $MAALI_TOOL_MODULE_DIR/.version"
+      maali_run "chgrp $MAALI_MODULE_RESTRICT_GROUP $MAALI_TOOL_MODULE_DIR/.version"
+      maali_run "chmod 640 $MAALI_TOOL_MODULE"
+      maali_run "chgrp $MAALI_MODULE_RESTRICT_GROUP $MAALI_TOOL_MODULE"
+
+      if [ -f "$MAALI_TOOL_MODULE~" ]; then
+        maali_run "chmod 640 $MAALI_TOOL_MODULE~"
+        maali_run "chgrp $MAALI_MODULE_RESTRICT_GROUP $MAALI_TOOL_MODULE~"
+      fi
+    fi
+  fi
+
+  if [ $DEBUG ]; then
+    if [ -f "$MAALI_TOOL_MODULE~" ]; then
+      echo "differences between $MAALI_TOOL_MODULE and $MAALI_TOOL_MODULE~"
+      diff $MAALI_TOOL_MODULE $MAALI_TOOL_MODULE~
+    fi
+  fi
+}

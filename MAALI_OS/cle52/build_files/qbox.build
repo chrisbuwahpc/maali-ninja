@@ -1,0 +1,54 @@
+##############################################################################
+# maali config file for qbox
+##############################################################################
+
+# Works for 1.60.4
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_INTEL_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://fpmd.ucdavis.edu/software/${MAALI_TOOL_NAME}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}.tgz"
+
+# location we are downloading the source code to
+MAALI_DST="${MAALI_SRC}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}.tgz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="${MAALI_BUILD_DIR}/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}"
+
+MAALI_TOOL_PREREQ="fftw/2.1.5.7 xerces-c"
+MAALI_TOOL_TYPE="apps"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="Qbox is a C++/MPI scalable parallel implementation of first-principles molecular dynamics (FPMD) based on the plane-wave, pseudopotential formalism. Qbox is designed for operation on large parallel computers"
+
+##############################################################################
+
+function maali_build {
+
+cat <<EOF > ${MAALI_TOOL_BUILD_DIR}/src/intel-ivec.mk
+ PLT=Linux_x8664
+ PLTOBJECTS = readTSC.o
+ CXX=CC
+ LD=\$(CXX)
+ PLTFLAGS += -DIA32 -DUSE_FFTW2 -DUSE_DFFTW -D_LARGEFILE_SOURCE \
+            -D_FILE_OFFSET_BITS=64 -DUSE_MPI -DSCALAPACK -DADD_ \
+            -DAPP_NO_THREADS -DXML_USE_NO_THREADS -DUSE_XERCES -DXERCESC_3
+ CXXFLAGS= -O -openmp -D\$(PLT) \$(INCLUDE) \$(PLTFLAGS) \$(DFLAGS)
+ LMAALI = -lsci_intel -ldfftw -L\$(MAALI_XERCESC_HOME)/lib -lxerces-c
+ LDFLAGS = -O -openmp \$(LIBS)
+EOF
+
+  cd "${MAALI_TOOL_BUILD_DIR}/src"
+  maali_run "make TARGET=intel-ivec"
+  maali_run "/usr/bin/install ./qb -D ${MAALI_INSTALL_DIR}/bin/qb"
+  cd "${MAALI_TOOL_BUILD_DIR}"
+  maali_run "cp -r ./doc  ${MAALI_INSTALL_DIR}/"
+  maali_run "cp -r ./test  ${MAALI_INSTALL_DIR}/"
+}
+
+##############################################################################
+
+
+

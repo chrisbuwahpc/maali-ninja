@@ -1,0 +1,43 @@
+##############################################################################
+# $Id: glib.build,v 1.5 2014/10/15 07:21:49 stapops Exp $
+##############################################################################
+# maali config file for glib
+##############################################################################
+
+#2.42.0
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS $MAALI_DEFAULT_INTEL_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="ftp.gnome.org/pub/GNOME/sources/$MAALI_TOOL_NAME/$MAALI_TOOL_MAJOR_MINOR_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.xz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.xz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="libffi cray-libsci"
+
+# I can't work out how to get this thing to not build the tests.
+MAALI_EXTRA_CRAY="craype-sandybridge"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--host=x86_64-unknown-linux-gnu --enable-static --enable-shared --disable-silent-rules --enable-debug=yes --disable-dtrace CC=cc CXX=CC LDFLAGS=-dynamic'
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+
+MAALI_MODULE_WHATIS="GLib provides the core application building blocks for libraries and applications written in C. It provides the core object system used in GNOME, the main loop implementation, and a large set of utility functions for strings and common data structures."
+
+##############################################################################
+
