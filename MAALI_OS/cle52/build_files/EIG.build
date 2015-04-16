@@ -1,0 +1,63 @@
+##############################################################################
+# $Id: EIG.build,v 1.3 2013/01/19 08:11:23 stapops Exp $
+##############################################################################
+# maali config file for EIG 
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILER"
+
+# URL to download the source code from
+MAALI_URL="http://www.hsph.harvard.edu/alkes-price/files/$MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_APPS_DIR/$COMPILER/$COMPILER_VER/$MAALI_TOOL_NAME" 
+   
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="apps"
+
+# tool pre-requisites modules needed to install this new tool/package
+MAALI_TOOL_PREREQ="lapack"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=" "
+
+# for auto-buildign module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_SETENV='EIG_HOME=$MAALI_INSTALL_DIR'
+MAALI_MODULE_WHATIS="The EIGENSOFT package combines functionality from our population genetics methods (Patterson et al. 2006) and our EIGENSTRAT stratification method (Price et al. 2006). The EIGENSTRAT method uses principal components analysis to explicitly model ancestry differences between cases and controls along continuous axes of variation; the resulting correction is specific to a candidate marker's variation in frequency across ancestral populations, minimizing spurious associations while maximizing power to detect true associations. The EIGENSOFT package has a built-in plotting script and supports multiple file formats and quantitative phenotypes."
+
+##############################################################################
+function maali_build {
+#   MAALI_LOCAL_BUILD_DIR="$MAALI_APPS_DIR/$COMPILER/$COMPILER_VER/$MAALI_TOOL_NAME" 
+   
+#  mv $MAALI_TOOL_VERSION E
+#  mv $MAALI_TOOL_VERSION $MAALI_LOCAL_BUILD_DIR
+
+  echo install $MAALI_TOOL_NAME in $MAALI_INSTALL_DIR
+  cd $MAALI_INSTALL_DIR
+  
+  echo install dir `pwd`
+  cp $MAALI_SRC/$MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.gz .
+  tar -zxf $MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.gz
+
+  cd src
+  echo `pwd`
+  maali_wiki " ... patch makefile "
+  sed -i s^g77^gfortran^g Makefile
+  sed -i s^"/broad/tools/lib64"^"\$(LAPACK)/lib"^g Makefile
+  sed -i s^"-lg2c"^" "^g Makefile
+  sed -i s^"latlas"^"ltmglib"^g Makefile
+ 
+  maali_run "make clean"
+  maali_run "make all " 
+  maali_wiki "... make "
+
+  maali_run "make install"
+  maali_wiki "... make install $MAALI_TOOL_NAME"
+
+}
+##############################################################################
