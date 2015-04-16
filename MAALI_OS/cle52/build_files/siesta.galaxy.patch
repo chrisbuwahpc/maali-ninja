@@ -1,0 +1,31 @@
+--- ./Src/MPI/generate.sh	2013-03-25 21:33:42.000000000 +0800
++++ /home/pryan/src/siesta-3.2/Src/MPI/generate.sh	2015-01-23 07:35:36.216046000 +0800
+@@ -6,7 +6,7 @@
+ echo " ===> Generating module files from templates..."
+ 
+ if [ -z "$@" ] ; then
+-    KINDS=`./kind_explorer`
++    KINDS=`aprun -q ./kind_explorer 2> /dev/null`
+ else
+     KINDS=$@
+ fi
+--- ./Src/FoX/configure	2013-03-25 21:33:42.000000000 +0800
++++ /home/pryan/src/siesta-3.2/Src/FoX/configure	2015-01-22 12:58:24.175722000 +0800
+@@ -2085,7 +2085,7 @@
+ # FIXME: These cross compiler hacks should be removed for Autoconf 3.0
+ # If not cross compiling, check that we can run a simple program.
+ if test "$cross_compiling" != yes; then
+-  if { ac_try='./$ac_file'
++  if { ac_try='aprun -q ./$ac_file'
+   { (case "(($ac_try" in
+   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+   *) ac_try_echo=$ac_try;;
+@@ -5964,7 +5964,7 @@
+   *) ac_try_echo=$ac_try;;
+ esac
+ eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+-  (eval "$ac_try") 2>&5
++  (eval "aprun -q $ac_try") 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); }; }; then
