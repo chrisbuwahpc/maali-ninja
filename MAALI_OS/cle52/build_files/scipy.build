@@ -1,0 +1,64 @@
+##############################################################################
+# maali config file for SciPy
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="python/2.7.9"
+
+# URL to download the source code from
+MAALI_URL="http://downloads.sourceforge.net/project/$MAALI_TOOL_NAME/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# Cray Sci Lib
+MAALI_TOOL_PREREQ="cray-libsci numpy/1.9.1"
+
+# Python packages should be compiled with GNU gcc and linked against libsci
+MAALI_TOOL_BUILD_PREREQ="gcc/4.8.2"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_python_build {
+
+cd $MAALI_TOOL_BUILD_DIR
+
+# Try to find a matching libsci_gnu library
+ARCH="ivybridge"
+GCC_MAJOR_MINOR=`gcc -dumpversion | tr -d '.' | cut -c 1-2`
+LIBSCI_DIR=$CRAY_LIBSCI_BASE_DIR/gnu/${GCC_MAJOR_MINOR}/${ARCH}
+
+if [ ! -d ${LIBSCI_DIR} ]; then
+    echo "libsci library not found in ${LIBSCI_DIR}"
+    exit 1
+fi
+
+cat <<EOF >site.cfg
+[default]
+libraries = sci_gnu
+library_dirs = ${LIBSCI_DIR}/lib
+include_dirs = ${LIBSCI_DIR}/include
+
+[lapack]
+lapack_libs = sci_gnu
+
+[blas]
+blas_libs = sci_gnu
+EOF
+
+cat <<EOF >setup.cfg
+[install]
+prefix = ${MAALI_INSTALL_DIR}
+EOF
+
+maali_run "python setup.py install"
+
+}
+
+##############################################################################

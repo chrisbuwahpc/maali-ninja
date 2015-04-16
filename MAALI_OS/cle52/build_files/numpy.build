@@ -1,0 +1,72 @@
+##############################################################################
+# $Id: numpy.maali,v 1.2 2015/02/18 03:25:50 stapops Exp $
+##############################################################################
+# maali config file for NumPy
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="python/2.7.9"
+
+# URL to download the source code from
+MAALI_URL="http://pypi.python.org/packages/source/$MAALI_PYTHON_FIRSTLETTER/$MAALI_TOOL_NAME/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# Cray Sci Lib
+MAALI_TOOL_PREREQ="cray-libsci"
+
+# Python packages should be compiled with GNU gcc and linked against lmaalici
+MAALI_TOOL_BUILD_PREREQ="gcc/4.8.2"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_python_build {
+
+cd $MAALI_TOOL_BUILD_DIR
+
+# Try to find a matching libs_gnu library
+ARCH="ivybridge"
+GCC_MAJOR_MINOR=`gcc -dumpversion | tr -d '.' | cut -c 1-2`
+LIBS_DIR=$CRAY_LIBS_BASE_DIR/gnu/${GCC_MAJOR_MINOR}/${ARCH}
+
+if [ ! -d ${LIBSCI_DIR} ]; then
+    echo "libsci library not found in ${LIBSCI_DIR}"
+    exit 1
+fi
+
+cat <<EOF >site.cfg
+[default]
+libraries = sci_gnu
+library_dirs = ${LIBSCI_DIR}/lib
+include_dirs = ${LIBSCI_DIR}/include
+
+[lapack]
+lapack_libs = sci_gnu
+
+[blas]
+blas_libs = sci_gnu
+EOF
+
+cat <<EOF >setup.cfg
+[build]
+compiler = unix
+fcompiler = gnu95
+
+[install]
+prefix = ${MAALI_INSTALL_DIR}
+install-lib = ${MAALI_INSTALL_DIR}/lib/python${PYTHON_LIB_VERSION}/site-packages
+EOF
+
+maali_run "python setup.py build"
+maali_run "python setup.py install"
+
+}
+
+##############################################################################

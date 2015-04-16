@@ -1,0 +1,60 @@
+##############################################################################
+# maali config file for MrBayes 
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="PrgEnv-gnu/5.2.25"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/$MAALI_TOOL_NAME/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/${MAALI_TOOL_NAME}_${MAALI_TOOL_VERSION}"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites, include CUDA if on Fornax
+MAALI_TOOL_PREREQ="beagle-lib/2.1.2 cray-mpich/7.0.0"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=''
+
+# runs in front of the configure line
+export CFLAGS=""
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_build {
+  cd $MAALI_TOOL_BUILD_DIR/src
+
+  # patch
+  sed -i 's/Calibration     defaultCalibration;//g' command.c
+
+  sed -i 's/foundDash/modFoundDash/g' model.c
+  sed -i 's/toJ/modToJ/g' model.c
+  sed -i 's/fromI/modFromI/g' model.c
+  sed -i 's/foundEqual/modFoundEqual/g' model.c
+  sed -i 's/foundExp/modFoundExp/g' model.c
+  sed -i 's/isNegative/modIsNegative/g' model.c
+
+  # configure and compile
+  unset CFLAGS
+  maali_run "autoconf"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR --enable-mpi=yes --with-beagle=$BEAGLE_LIB_DIR CC=CC mpicc=CC CFLAGS='-dynamic -O3 -ffast-math -Wno-write-strings -fpermissive' "
+  sed -i 's/mpicc/CC/g' Makefile
+  maali_run "make"
+
+  # make install target missing, manual copy instead
+  maali_run "mkdir $MAALI_INSTALL_DIR/bin"
+  maali_run "install -m 755 mb $MAALI_INSTALL_DIR/bin/"
+
+}
+
+##############################################################################
