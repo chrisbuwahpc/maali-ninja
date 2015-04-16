@@ -1,0 +1,141 @@
+##############################################################################
+# $Id: amber.maali,v 1.4 2015/03/19 00:37:00 stapops Exp $
+##############################################################################
+# maali config file for Amber
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_INTEL_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL=""
+
+# location we are downloading the source code to
+if [ $MAALI_TOOL_VERSION == "12" ]
+then
+  MAALI_DST="$MAALI_SRC/Amber$MAALI_TOOL_VERSION.tar.bz2 $MAALI_SRC/AmberTools13.tar.bz2"
+elif [ $MAALI_TOOL_VERSION == "14" ]
+then
+  MAALI_DST="$MAALI_SRC/Amber$MAALI_TOOL_VERSION.tar.bz2 $MAALI_SRC/AmberTools14.tar.bz2"
+fi
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/amber$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="netcdf python"
+
+#Remove haswell module so autoconf works on login node.
+MAALI_EXTRA_CRAY="craype-sandybridge"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='-noX11 -crayxt5 -nomtkpp --with-netcdf $NETCDF_DIR intel'
+export AMBERHOME=$MAALI_BUILD_DIR/amber$MAALI_TOOL_VERSION
+
+##############################################################################
+
+function maali_build {
+  export MAALI_CORES=16
+
+  # allows late evaluation
+  MAALI_TOOL_CONFIGURE_EVAL=`eval echo "$MAALI_TOOL_CONFIGURE"`
+
+  export AM_LDFLAGS="-dynamic"
+
+  if [ "$MAALI_COMPILER_NAME" == "PrgEnv-intel" ]; then
+    export MKL_HOME=$MKLROOT
+    export AMBERBUILDFLAGS="-I${MKLROOT}/include/fftw"
+  fi
+
+  # Bypass the normal configure script, which does an update and then calls configure2.
+  # Run twice so can patch itself.
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "echo y | ./update_amber --update"
+  maali_run "echo y | ./update_amber --update"
+
+  # Serial
+  maali_run "./configure $MAALI_TOOL_CONFIGURE_EVAL"
+  maali_run "make -e"
+  maali_run "make -j$MAALI_CORES -e install"
+
+  # Parallel
+  maali_run "./configure -mpi $MAALI_TOOL_CONFIGURE_EVAL"
+  maali_run "make -e"
+  maali_run "make -j$MAALI_CORES -e install"
+
+  maali_run "mv * $MAALI_INSTALL_DIR/"
+  maali_run "chmod 750 $MAALI_INSTALL_DIR"
+  maali_run "chgrp -R amber $MAALI_INSTALL_DIR"
+}
+
+##############################################################################
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_SETENV='AMBERHOME=$MAALI_APP_HOME'
+MAALI_MODULE_RESTRICT_GROUP=amber
+
+##############################################################################
+
+function maali_unpack {
+  cd $MAALI_BUILD_DIR
+  if [ $DEBUG ]; then
+    maali_wiki " .. unpacking into $MAALI_BUILD_DIR"
+  fi
+
+  i=0;
+  for MAALI_TMP_DST in $MAALI_DST ; do
+     MAALI_DST_ARRAY[$i]=$MAALI_TMP_DST
+    (( i++ ))
+  done
+
+  size=${#MAALI_DST_ARRAY[@]}
+  for (( i=0; i<$size; i++ ))
+  do
+    MAALI_TMP_DST=${MAALI_DST_ARRAY[$i]}
+
+    if [ ! -f "$MAALI_TMP_DST" ]; then
+      echo "$MAALI_TMP_DST does not exit"
+      exit 1
+    fi
+
+    MAALI_DST_FILESIZE=$(stat -c%s "$MAALI_TMP_DST")
+    if [ $MAALI_DST_FILESIZE -eq 0 ]; then
+      echo "$MAALI_TMP_DST is 0 bytes big"
+      exit 1
+    fi
+
+    if [ $MAALI_UNPACK_MKDIR ]; then
+      mkdir "$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+      cd "$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+    fi
+
+    MAALI_TYPE=`file -b $MAALI_TMP_DST | cut -d ',' -f 1`
+
+    if [ $DEBUG ]; then
+      maali_wiki " .. unpacking $MAALI_TMP_DST"
+    fi
+
+    if [ "$MAALI_TYPE" = "bzip2 compressed data" ]; then
+      tar jxf $MAALI_TMP_DST
+    elif [ "$MAALI_TYPE" = "compress'd data 16 bits" ]; then
+      tar zxf $MAALI_TMP_DST
+    elif [ "$MAALI_TYPE" = "xz compressed data" -o "$MAALI_TYPE" = "XZ compressed data" ]; then
+      tar Jxf $MAALI_TMP_DST
+    elif [ "$MAALI_TYPE" = "gzip compressed data" ]; then
+      tar zxf $MAALI_TMP_DST
+
+      if [ $? -ne 0 ]; then
+        gzip -dc $MAALI_TMP_DST | tar zxf -
+      fi
+    elif [ "$MAALI_TYPE" = "Zip archive data" ]; then
+      unzip -qq $MAALI_TMP_DST
+    else
+      echo "MAALI $MAALI_VERSION does not support decompressing $MAALI_TYPE. Please e-mail help@ivec.org and lodge a feature request"
+      exit 1
+    fi
+
+  done
+
+}

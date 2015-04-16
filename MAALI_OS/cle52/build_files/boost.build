@@ -6,7 +6,7 @@
 
 # specify which compilers we want to build the tool with
 MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS $MAALI_DEFAULT_INTEL_COMPILERS"
-MAALI_TOOL_SUBCOMPILERS="gcc/4.8.2 gcc/4.9.0 intel/13.1.3.192 intel/14.0.1.106"
+#MAALI_TOOL_SUBCOMPILERS="gcc/4.8.2 gcc/4.9.0 intel/13.1.3.192 intel/14.0.1.106"
 
 # needed  for this URL
 MAALI_BOOST_VERSION=`echo $MAALI_TOOL_VERSION| sed -e 's/\./_/g'`
