@@ -30,7 +30,7 @@ function maali_build {
   cd "$MAALI_TOOL_BUILD_DIR"
 
   maali_run "CC=cc CXX=CC  LDFLAGS=-dynamic ./bootstrap --parallel=24 --prefix=$MAALI_INSTALL_DIR"
-  maali_run "make"
+  maali_run "make -j$MAALI_CORES"
   maali_run "make install"
 }
 
