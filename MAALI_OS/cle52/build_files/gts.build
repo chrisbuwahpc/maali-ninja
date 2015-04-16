@@ -5,7 +5,7 @@
 ##############################################################################
 
 #120708
-
+#121130
 # specify which compilers we want to build the tool with
 MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS $MAALI_DEFAULT_INTEL_COMPILERS"
 
