@@ -358,6 +358,11 @@ EOF
         MANPATH)
           MAALI_MODULE_VARIABLE_DIR="share/man"
           ;;
+        MAALI_USER_MAP)
+          MAALI_MODULE_VARIABLE_TCL="setenv"
+          MAALI_MODULE_VARIABLE_DIR="share/user.map"
+#          MAALI_MODULE_VARIABLE_PREPREND=""
+          ;;
         *)
           # the default is to the setenv
          MAALI_MODULE_VARIABLE_TCL="setenv"
