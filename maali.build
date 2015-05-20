@@ -18,9 +18,8 @@ MAALI_TOOL_BUILD_DIR=""
 MAALI_TOOL_TYPE="tools"
 
 # for auto-building module files
+MAALI_MODULE_SET_MAALI_USER_MAP=1
 MAALI_MODULE_SET_PATH=1
-MAALI_MODULE_SET_MAALI_USER_MAP='$MAALI_APP_HOME/share/user.map'
-
 ##############################################################################
 
 function maali_unpack {
@@ -30,7 +29,9 @@ function maali_unpack {
 ##############################################################################
 
 function maali_build {
+  echo `pwd`
   maali_run "mkdir $MAALI_INSTALL_DIR/bin"
+  maali_run "mkdir $MAALI_INSTALL_DIR/share"
   maali_run "install -m 755 maali $MAALI_INSTALL_DIR/bin"
 
   # set the version number
@@ -39,6 +40,8 @@ function maali_build {
   # copy the config file and make it a system build
   maali_run "install -m 644 $MAALI_MAALI_CONFIG_FILEPATH $HOME/.maali/$MAALI_OS.config"
   sed -i -e 's/#MAALI_SYSTEM_BUILD/MAALI_SYSTEM_BUILD/g' $HOME/.maali/$MAALI_OS.config
+#  maali_run "ln -s MAALI_OS/${MAALI_OS} $HOME/.maali/."
+
 }
 
 ##############################################################################
