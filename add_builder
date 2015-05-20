@@ -1,0 +1,35 @@
+#!/bin/bash
+# This is simple bash script to create and maintain the user.map file.
+# 
+# command to use: ./add_builder username "User Name" user@email.address.org
+#
+#module use /pawsey/fedora20/modulefiles/tools
+
+module load maali
+
+echo $1 $2 $3
+
+# search to see if user is already in user.map file
+grep $1 $MAALI_USER_MAP
+
+if [ $? == 0 ]; then
+  echo "User already in user map no update made to file." 
+  exit 1
+else
+  echo "Added $2 to user.map file"
+fi
+# add new user to user map file append to the bottom of list
+if [ -e $MAALI_USER_MAP ]; then 
+  sed -i -e 's/fi/elif [ "'\$MAALI_BUILDER_UID'" == '\"$1\"' ]; then/g' $MAALI_USER_MAP
+  echo "  MAALI_BUILDER_BUILD_CN='$2' ">> ${MAALI_USER_MAP}
+  echo "  MAALI_BUILDER_BUILD_MAIL='$3' ">> ${MAALI_USER_MAP}
+  echo "fi" >> ${MAALI_USER_MAP}
+else 
+# Create the file add initial user 
+  echo "# declare -A does not work if bash version < 4 " >> ${MAALI_USER_MAP}
+  echo " " >> ${MAALI_USER_MAP}
+  echo "if [ "'$MAALI_BUILDER_UID'" == \"$1\" ]; then ">> ${MAALI_USER_MAP} 
+  echo "  MAALI_BUILDER_BUILD_CN='$2' " >> ${MAALI_USER_MAP}
+  echo "  MAALI_BUILDER_BUILD_MAIL='$3' " >> ${MAALI_USER_MAP}
+  echo "fi" >> ${MAALI_USER_MAP} 
+fi
