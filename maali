@@ -336,10 +336,6 @@ EOF
         PYTHONPATH)
           MAALI_MODULE_VARIABLE_DIR="\$env(MAALI_PYTHON_LIBDIR)/python\$env(PYTHON_LIB_VERSION)/site-packages"
           ;;
-        PYTHON_DIR)
-          MAALI_MODULE_VARIABLE=2
-          MAALI_MODULE_VARIABLE_TCL="setenv"
-          ;;
         PERLLIB)
           # TODO: get perl version from perl
           MAALI_MODULE_VARIABLE_DIR="lib/perl5/site_perl/5.10.1"
