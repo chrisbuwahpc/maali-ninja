@@ -9,17 +9,16 @@ module load maali
 
 echo $1 $2 $3
 
-# search to see if user is already in user.map file
-grep $1 $MAALI_USER_MAP
-
-if [ $? == 0 ]; then
-  echo "User already in user map no update made to file." 
-  exit 1
-else
-  echo "Added $2 to user.map file"
-fi
 # add new user to user map file append to the bottom of list
 if [ -e $MAALI_USER_MAP ]; then 
+  # search to see if user is already in user.map file
+  grep $1 $MAALI_USER_MAP
+  if [ $? == 0 ]; then
+     echo "User already in user map no update made to file." 
+     exit 1
+  else
+     echo "Added $2 to user.map file"
+  fi
   sed -i -e 's/fi/elif [ "'\$MAALI_BUILDER_UID'" == '\"$1\"' ]; then/g' $MAALI_USER_MAP
   echo "  MAALI_BUILDER_BUILD_CN='$2' ">> ${MAALI_USER_MAP}
   echo "  MAALI_BUILDER_BUILD_MAIL='$3' ">> ${MAALI_USER_MAP}
@@ -33,3 +32,4 @@ else
   echo "  MAALI_BUILDER_BUILD_MAIL='$3' " >> ${MAALI_USER_MAP}
   echo "fi" >> ${MAALI_USER_MAP} 
 fi
+
