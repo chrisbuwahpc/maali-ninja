@@ -29,18 +29,31 @@ function maali_unpack {
 ##############################################################################
 
 function maali_build {
-  echo `pwd`
+  
   maali_run "mkdir $MAALI_INSTALL_DIR/bin"
   maali_run "mkdir $MAALI_INSTALL_DIR/share"
+  if [ ! -d "$HOME/.maali" ]; then 
+      maali_run "mkdir $HOME/.maali"
+  fi 
   maali_run "install -m 755 maali $MAALI_INSTALL_DIR/bin"
 
   # set the version number
   sed -i -e 's/MAALI_VERSION="tip"/MAALI_VERSION="'$MAALI_TOOL_VERSION'"/g' $MAALI_INSTALL_DIR/bin/maali
+  echo `pwd` 
+
+  # NOTE:the default maali.config file is not set to a system builds but for local/group builds
+  maali_run "cp MAALI_OS/${MAALI_OS}/${MAALI_OS}.config  $HOME/.maali/$MAALI_SYSTEM.config"
+  maali_run "install -m 644 $MAALI_MAALI_CONFIG_FILEPATH $HOME/.maali/$MAALI_SYSTEM.config"
+  echo $MAALI_SYSTEM
+  sed 's/MAALI_SYSTEM=/MAALI_SYSTEM=${MAALI_SYSTEM}/g' $HOME/.maali/$MAALI_SYSTEM.config
 
   # copy the config file and make it a system build
-  maali_run "install -m 644 $MAALI_MAALI_CONFIG_FILEPATH $HOME/.maali/$MAALI_OS.config"
-  sed -i -e 's/#MAALI_SYSTEM_BUILD/MAALI_SYSTEM_BUILD/g' $HOME/.maali/$MAALI_OS.config
-#  maali_run "ln -s MAALI_OS/${MAALI_OS} $HOME/.maali/."
+  if [ $MAALI_SYSTEM_BUILD == "YES" ]; then 
+   echo this is a system build
+   sed -i -e 's/#MAALI_SYSTEM_BUILD/MAALI_SYSTEM_BUILD/g' $HOME/.maali/$MAALI_SYSTEM.config
+  fi
+  temp_dir=`pwd`/MAALI_OS/${MAALI_OS} 
+  maali_run "ln -s $temp_dir $HOME/.maali/${MAALI_OS}"
 
 }
 
