@@ -1,10 +1,48 @@
 
-Maali is an open source package with a collection of build scripts. The scripts are
-called by maali to configure, compile and install software for HPC systems.
-Maali is the result of efforts led by David Schibeci, Chris Bording and Christopher Harris.
+Maali is an open source package with a collection of build scripts. The scripts 
+are called by maali to configure, compile and install software for HPC systems.
+Maali is the result of efforts led by David Schibeci, Chris Bording 
+and Christopher Harris.
+
+Some assumptions made with maali is that you are setting up hierachral module 
+environment. This requires that you add in some cases set additional environment 
+variables the COMPILER and COMPILER_VER are used throughout for defined the install
+path for most applications the major execption is python.
+
+for example in the gnu compiler module we
+setenv          COMPILER        gcc
+setenv          COMPILER_VER    4.8.3
 
 
+We define in the maali.config the MAALI_ROOT path variable.
+/$MAALI_ROOT
+
+/$MAALI_ROOT/$MAALI_OS/ is the root level at which all the packages and 
+modules are installed.
+
+for example
+/$MAALI_ROOT/$MAALI_OS/apps - The application install directory this where 
+                              --prefix is usually set to.  
+/$MAALI_ROOT/$MAALI_OS/build - For most applications we copy and extract the 
+                               source and build it in a seperate directory.
+/$MAALI_ROOT/$MAALI_OS/src - This is where we save all the src packages that 
+                             are downloaded for each build.
+/$MAALI_ROOT/$MAALI_OS/tools - This is where on maali is installed
+/$MAALI_ROOT/$MAALI_OS/modulefiles - the environment module files are located here.
+
+In the application directory (/$MAALI_ROOT/$MAALI_OS/apps) we create the main 
+branches for different compilers 
 
 To install maali 
 
 ./maali -t maali -v <version> -c maali -d
+
+
+you need to then add the maali module to your MODULEPATH
+
+either in your .bashrc file in your $HOME directory or to your system config files in /etc .  
+
+
+then run 
+./add_user cbording "Chris Bording" chris.email@email.com
+
