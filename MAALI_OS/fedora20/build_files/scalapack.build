@@ -1,0 +1,57 @@
+##############################################################################
+# $Id: scalapack.maali,v 1.5 2013/11/01 04:18:23 stapops Exp $
+##############################################################################
+# maali config file for ScaLAPACK/BLACS
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://netlib.org/scalapack/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tgz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tgz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites modules needed to install this new tool/package
+MAALI_TOOL_PREREQ="$MAALI_DEFAULT_MPI lapack/3.4.2"
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ="cmake/2.8.10.2"
+
+# for auto-building module files
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+# does this need late evaluation?
+MAALI_MODULE_SET_SETENV='ScaLAPACK_HOME=$MAALI_INSTALL_DIR'
+
+# currently not implemented
+MAALI_MODULE_WHATIS='ScaLAPACK is a library of high-performance linear algebra routines for parallel distributed memory machines.
+  ScaLAPACK solves dense and banded linear systems, least squares problems, eigenvalue problems, and singular value problems.
+  Your BLAS library is  -L$MAALI_INSTALL_DIR/lib -lblas
+  Your LAPACK library is -L$MAALI_INSTALL_DIR/lib -ltmg -llapack
+  Your BLACS/ScaLAPACK library is -L$MAALI_INSTALL_DIR/lib -lscalapack'
+
+##############################################################################
+
+function maali_build {
+
+  cd $MAALI_TOOL_BUILD_DIR
+  
+  mkdir "$MAALI_TOOL_NAME-build"
+  cd "$MAALI_TOOL_NAME-build"
+
+  maali_run "cmake .. -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_INSTALL_PREFIX:PATH=$MAALI_INSTALL_DIR -DBLAS_LIBRARIES:PATH=$LAPACK/lib/libblas.so -DLAPACK_LIBRARIES:PATH=$LAPACK/lib/liblapack.so"
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make test"
+  maali_run "make install"
+
+}
+
+##############################################################################
