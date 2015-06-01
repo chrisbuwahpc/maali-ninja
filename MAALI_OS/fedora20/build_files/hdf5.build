@@ -1,0 +1,84 @@
+##############################################################################
+# $Id: hdf5.ibs,v 1.9 2013/10/24 02:53:36 stapops Exp $
+##############################################################################
+# ibs config file for hdf5
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="http://www.hdfgroup.org/ftp/HDF5/releases/$IBS_TOOL_NAME-$IBS_TOOL_VERSION/src/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.bz2"
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="devel"
+
+# tool pre-requisites
+IBS_TOOL_PREREQ="zlib/1.2.7 szip/2.1"
+
+# add additional configure options
+IBS_TOOL_CONFIGURE='--with-zlib=$IBS_ZLIB_HOME --with-szlib=$IBS_SZIP_HOME --enable-fortran --enable-cxx --enable-production --with-default-api-version=v16'
+
+##############################################################################
+
+function ibs_build {
+  cd "$IBS_TOOL_BUILD_DIR"
+  
+  IBS_TOOL_CONFIGURE_EVAL=`eval echo "$IBS_TOOL_CONFIGURE"`
+  ibs_run "./configure --prefix=$IBS_INSTALL_DIR $IBS_TOOL_CONFIGURE_EVAL"
+  ibs_run "make -j $IBS_CORES" 
+  ibs_run "make test"
+  ibs_run "make install"
+}
+
+##############################################################################
+
+function ibs_module {
+
+IBS_APP_HOME="$IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION"
+
+cat <<EOF >$IBS_TOOL_MODULE
+#%Module######################################################################
+#
+# $IBS_TOOL modulefile
+#
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths you need to use \$tool version \$version"
+}
+set sys     [uname sysname]
+set version $IBS_TOOL_VERSION
+set tool    $IBS_TOOL_NAME
+if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+  module unload \$tool
+}
+
+module-whatis HDF5 is a data model, library, and file format for storing and managing data. 
+module-whatis It supports an unlimited variety of datatypes, and is designed for flexible and 
+module-whatis efficient I/O and for high volume and complex data. HDF5 is portable and is extensible, 
+module-whatis allowing applications to evolve in their use of HDF5. The HDF5 Technology suite includes 
+module-whatis tools and applications for managing, manipulating, viewing, and analyzing data in the HDF5 format. 
+
+# need to check the compiler is defined
+
+module load zlib/1.2.7
+module load szip/2.1
+
+setenv       HDF5_DIR        $IBS_APP_HOME
+setenv       IBS_HDF5_HOME   $IBS_APP_HOME
+
+prepend-path PATH            $IBS_APP_HOME/bin
+prepend-path LD_LIBRARY_PATH $IBS_APP_HOME/lib
+prepend-path MANPATH         $IBS_APP_HOME/share/man
+prepend-path CPATH           $IBS_APP_HOME/include
+prepend-path FPATH           $IBS_APP_HOME/include
+prepend-path FCPATH          $IBS_APP_HOME/include
+EOF
+}
+
+##############################################################################
