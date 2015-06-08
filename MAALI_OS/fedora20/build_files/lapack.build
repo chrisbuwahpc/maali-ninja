@@ -23,7 +23,7 @@ MAALI_TOOL_TYPE="devel"
 MAALI_TOOL_PREREQ=""
 
 # tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
-MAALI_TOOL_BUILD_PREREQ="cmake/2.8.10.2"
+MAALI_TOOL_BUILD_PREREQ="cmake/3.2.3"
 
 # add additional configure options
 MAALI_TOOL_CONFIGURE='-DBUILD_SHARED_LMAALI:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release'
