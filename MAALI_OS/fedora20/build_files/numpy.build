@@ -1,33 +1,33 @@
 ##############################################################################
-# $Id: numpy.ibs,v 1.13 2014/02/10 08:04:25 stapops Exp $
+# $Id: numpy.maali,v 1.13 2014/02/10 08:04:25 stapops Exp $
 ##############################################################################
-# ibs config file for NumPy
+# maali config file for NumPy
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_PYTHON"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_PYTHON"
 
 # URL to download the source code from
-IBS_URL="http://pypi.python.org/packages/source/$IBS_PYTHON_FIRSTLETTER/$IBS_TOOL_NAME_ORIG/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.tar.gz"
+MAALI_URL="http://pypi.python.org/packages/source/$MAALI_PYTHON_FIRSTLETTER/$MAALI_TOOL_NAME_ORIG/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.tar.gz"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="intel-mkl/10.3.12"
+MAALI_TOOL_PREREQ=" "
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PATH=1
 
 ##############################################################################
 
-function ibs_python_build {
+function maali_python_build {
 
 # change to build directory
-cd $IBS_TOOL_BUILD_DIR
+cd $MAALI_TOOL_BUILD_DIR
 
 # use mkl for performance (Current Intel compilers are different)
 cat <<EOF >site.cfg
@@ -40,9 +40,9 @@ EOF
 
 export LDFLAGS='-lgomp'
 
-ibs_run "python setup.py config"
-ibs_run "python setup.py build"
-ibs_run "python setup.py install --prefix=$IBS_INSTALL_DIR"
+maali_run "python setup.py config"
+maali_run "python setup.py build"
+maali_run "python setup.py install --prefix=$IBS_INSTALL_DIR"
 }
 
 ##############################################################################
