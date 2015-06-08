@@ -24,9 +24,14 @@ cd ~/.maali/fedora20/build_files
 #maali -t scalapack -v 2.0.2 -c strindberg -d
 
 # install fftw libraries
-#maali -t fftw
+maali -t fftw -v 2.1.5 -c strindberg
+maali -t fftw -v 3.3.2 -c strindberg
+maali -t fftw -v 3.3.4 -c strindberg
 
-maali -t numpy -v 1.6.2 -c strindberg -d
-maali -t numpy -v 1.8.0 -c strindberg -d
-maali -t scipy -v 0.13.0 -c strindberg -d
+maali -t fftw-parallel -v 3.3.2 -c strindberg
+maali -t fftw-parallel -v 3.3.4 -c strindberg
+
+#maali -t numpy -v 1.6.2 -c strindberg -d
+#maali -t numpy -v 1.8.0 -c strindberg -d
+#maali -t scipy -v 0.13.0 -c strindberg -d
 
