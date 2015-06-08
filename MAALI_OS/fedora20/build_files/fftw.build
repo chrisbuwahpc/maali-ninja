@@ -1,66 +1,72 @@
 ##############################################################################
-# $Id: fftw.ibs,v 1.15 2014/04/28 09:22:39 stapops Exp $
+# $Id: fftw.build,v 1.15 2014/04/28 09:22:39 stapops Exp $
 ##############################################################################
-# ibs config file for fftw
+# maali config file for fftw
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://www.fftw.org/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz"
+MAALI_URL="http://www.fftw.org/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="devel"
+MAALI_TOOL_TYPE="devel"
 
 # add additional configure options
-IBS_TOOL_CONFIGURE='--enable-threads --enable-shared --enable-sse2'
+#--enable-avx-- FFTW 3.3.2 is capable of using AVX intrinsics on AVX enabled processors (e.g. Intel Sandy Bridge and AMD Bulldozer)
+MAALI_TOOL_CONFIGURE='--enable-threads --enable-shared --enable-sse2'
 
 # runs in front of the configure line
 export CFLAGS="-fPIC"
 export FFLAGS="-fPIC"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
-IBS_MODULE_SET_LD_LIBRARY_PATH=1
-IBS_MODULE_SET_CPATH=1
-IBS_MODULE_SET_FPATH=1
-IBS_MODULE_SET_FCPATH=1
-IBS_MODULE_SET_MANPATH=1
-IBS_MODULE_SET_PKG_CONFIG_PATH=1
-IBS_MODULE_SET_SETENV='FFTW_HOME=$IBS_APP_HOME FFTW_INCLUDE=$IBS_APP_HOME/include FFTW_LIB=$IBS_APP_HOME/lib'
-IBS_MODULE_WHATIS="FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data."
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_SET_SETENV='FFTW_HOME=$MAALI_APP_HOME FFTW_INCLUDE=$MAALI_APP_HOME/include FFTW_LIB=$MAALI_APP_HOME/lib'
+MAALI_MODULE_WHATIS="FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data."
 
 ##############################################################################
 
-function ibs_build {
+function maali_build {
   # fftw needs a double build for creating software
   #
-  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
     export F77=ifort
+  elif [ "$MAALI_COMPILER_NAME" == "pgi" ]; then
+     export F77=pgfortran
+     export FFLAGS="-fast -Minfo" 
+     export CC=pgcc 
+     export CFLAGS="-fast -Minfo -fPIC"     
   fi
 
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
   # Making single precision version with type prefix
-  ibs_run "./configure --prefix=$IBS_INSTALL_DIR $IBS_TOOL_CONFIGURE --enable-float --enable-type-prefix"
-  ibs_run "make -j $IBS_CORES"
-  ibs_run "make install"
-  ibs_run "make clean"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-float --enable-type-prefix"
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make install"
+  maali_run "make clean"
   # Making double precision version without type prefix
-  ibs_run "./configure --prefix=$IBS_INSTALL_DIR $IBS_TOOL_CONFIGURE"
-  ibs_run "make -j $IBS_CORES"
-  ibs_run "make install"
-  ibs_run "make clean"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE"
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make install"
+  maali_run "make clean"
   # Making double precision version with type prefix
-  ibs_run "./configure --prefix=$IBS_INSTALL_DIR $IBS_TOOL_CONFIGURE --enable-type-prefix"
-  ibs_run "make -j $IBS_CORES"
-  ibs_run "make install"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-type-prefix"
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make install"
 }
 
 ##############################################################################
