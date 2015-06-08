@@ -1,0 +1,29 @@
+#%Module1.0###################################################################
+##
+
+proc ModulesHelp { } {
+    puts stderr "\t[module-info name] - loads the compiler env variables"
+    puts stderr "\tThe following env variables are set:"
+    puts stderr "\t\t$COMPILER, $COMPILER_VER, $CC, $FC"
+    puts stderr "\tThe following env variables are modified:"
+    puts stderr "\t\t$PATH, $MANPATH, $LD_LIBRARY_PATH"
+}
+
+#conflict compilers
+conflict pgi/14.7 
+
+module-whatis   "loads the [module-info name] environment"
+
+# Tcl script use only
+setenv          COMPILER        gnu
+setenv          COMPILER_VER    4.8.3
+setenv          CC              gcc
+setenv          FC              gfortran
+setenv          CXX             g++
+setenv          F77             gfortran
+setenv		F90		gfortran
+setenv		F95		gfortran
+setenv		F9X		gfortran
+
+prepend-path    MANPATH /usr/share/man
+
