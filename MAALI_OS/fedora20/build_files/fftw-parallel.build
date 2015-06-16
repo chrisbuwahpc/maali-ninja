@@ -30,7 +30,13 @@ MAALI_TOOL_BUILD_PREREQ=""
 
 # add additional configure options
 #--enable-avx-- FFTW 3.3.2 is capable of using AVX intrinsics on AVX enabled processors (e.g. Intel Sandy Bridge and AMD Bulldozer)
-MAALI_TOOL_CONFIGURE='--enable-threads --enable-shared --enable-sse2 --enable-mpi --with-openmp --enable-fortran'
+# note make check fails the basic tests with --enable-sse2
+if [ $MAALI_TOOL_VERSION == 2.1.5 ]; then
+  MAALI_TOOL_CONFIGURE='--enable-shared --enable-sse2 --enable-mpi --enable-openmp --enable-fortran --enable-type-prefix' 
+elif
+  MAALI_TOOL_CONFIGURE='--enable-shared --enable-sse2 --enable-mpi --enable-openmp --enable-fortran'
+                        -
+fi
 
 # runs in front of the configure line
 export CFLAGS="-fPIC"
@@ -68,7 +74,7 @@ function maali_build {
 
   cd "$MAALI_TOOL_BUILD_DIR"
   # Making single precision version with type prefix
-  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-float --enable-type-prefix"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-single "
   maali_run "make -j $MAALI_CORES"
   maali_run "make install"
   maali_run "make clean"
@@ -78,9 +84,9 @@ function maali_build {
   maali_run "make install"
   maali_run "make clean"
   # Making double precision version with type prefix
-  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-type-prefix"
-  maali_run "make -j $MAALI_CORES"
-  maali_run "make install"
+#  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-t"
+#  maali_run "make -j $MAALI_CORES"
+#  maali_run "make install"
   
 }
 

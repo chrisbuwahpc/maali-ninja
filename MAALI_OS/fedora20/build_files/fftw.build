@@ -64,9 +64,9 @@ function maali_build {
   maali_run "make install"
   maali_run "make clean"
   # Making double precision version with type prefix
-  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-type-prefix"
-  maali_run "make -j $MAALI_CORES"
-  maali_run "make install"
+#  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-type-prefix"
+#  maali_run "make -j $MAALI_CORES"
+#  maali_run "make install"
 }
 
 ##############################################################################
