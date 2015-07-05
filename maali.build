@@ -1,4 +1,5 @@
-##############################################################################
+#
+############################################################################
 # maali build file for maali
 ##############################################################################
 
@@ -32,6 +33,11 @@ function maali_build {
   
   maali_run "mkdir $MAALI_INSTALL_DIR/bin"
   maali_run "mkdir $MAALI_INSTALL_DIR/share"
+
+  if [ ! -d "$MAALI_MODULE_DIR" ]; then  
+     malli_run "mkdir $MAALI_MODULE_DIR/tool"
+  fi	
+
   if [ ! -d "$HOME/.maali" ]; then 
       maali_run "mkdir $HOME/.maali"
   fi 
