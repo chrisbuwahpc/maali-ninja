@@ -110,7 +110,7 @@ function maali_genpkgconfig {
     if [ ! -f "$MAALI_INSTALL_DIR/lib/pkgconfig/${MAALI_MODULE_PE_PKGCONFIG_NAME[$indx]}.pc" ]; then
       cat <<EOF > $MAALI_INSTALL_DIR/lib/pkgconfig/${MAALI_MODULE_PE_PKGCONFIG_NAME[$indx]}.pc
 Name: $MAALI_TOOL_NAME
-Description: $MAALI_TOOL_NAME's library ${MAALI_MODULE_PE_PKGCONFIG_NAME[$indx]}
+Description: $MAALI_TOOL_NAME is the library ${MAALI_MODULE_PE_PKGCONFIG_NAME[$indx]}
 Version: $MAALI_TOOL_VERSION
 
 prefix=$MAALI_INSTALL_DIR
