@@ -1,23 +1,27 @@
 
-Maali is an open source package with a collection of build scripts. The scripts 
-are called by maali to configure, compile and install software for HPC systems.
+Maali is used to automate the make/cmake builds and the creation of  environment modules.
+The build scripts are called by maali to configure, compile and install software for HPC systems.
 Maali is the result of efforts led by David Schibeci, Chris Bording 
 and Christopher Harris.
 
-Some assumptions made with maali is that you are setting up hierachral module 
+Some assumptions made with maali one is that you are setting up a hierachral module 
 environment. This requires that you add in some cases set additional environment 
 variables the COMPILER and COMPILER_VER are used throughout for defined the install
 path for most applications the major execption is python.
 
-for example in the gnu compiler module we
+for example in the gnu compiler module we define 
 setenv          COMPILER        gcc
 setenv          COMPILER_VER    4.8.3
 
 
 We define in the maali.config the MAALI_ROOT path variable.
-/$MAALI_ROOT
+/$MAALI_ROOT this will be site/install specific. If it is system install should be 
+root directory level (/).  Note you will need to check the /$MAALI_ROOT 
+owner names and group names and make the appropiate changes with the chown command.
 
-/$MAALI_ROOT/$MAALI_OS/ is the root level at which all the packages and 
+
+The directories in $MAALI_ROOT are created automatically when maali is installed
+/$MAALI_ROOT/$MAALI_OS/ is the maali rool level directory  at which all the packages and 
 modules are installed.
 
 for example
@@ -37,12 +41,30 @@ To install maali
 
 ./maali -t maali -v <version> -c maali -d
 
+You will need to then add the maali modulefiles to your MODULEPATH
+either in your .bashrc file in your $HOME directory.  
 
-you need to then add the maali module to your MODULEPATH
+Here is and example
+export MODULEPATH=/$MAALI_ROOT/$MAALI_OS/modulefiles/devel:/$MAALI_ROOT/$MAALI_OS/modulefiles/tools:/$MAALI_ROOT/$MAALI_OS/modulefiles/apps:$MODULEPATH
 
-either in your .bashrc file in your $HOME directory or to your system config files in /etc .  
+You can then source your ".bashrc" file with the command "source ~/.bashrc"
+Note: The simplest way to pickup changes to your .bashrc file is to logout and log back in.
 
+There is a sample gnu compiler module name gnu/4.8.3 in $MAALI_OS/samples directory. 
+Check to ensure that the compiler version is correct for your system 
+"gcc -v" will show the gnu version for the default gnu compilers.
+Rename and edit the COMPILER_VER variable as needed.
+
+Copy it to the /$MAALI_ROOT/$MAALI_OS/modulefiles/devel  
+
+Next you will want to define the MAALI_TOOL_COMPILERS variable in your 
+.maali/$MAALI_SYSTEM.config file.
 
 then run 
-./add_user cbording "Chris Bording" chris.email@email.com
+./add_builder cbording "Chris Bording" chris.email@email.com
 
+
+
+
+# Extra notes
+/proc/cpuinfo - lists detailed information about the local cpu 
