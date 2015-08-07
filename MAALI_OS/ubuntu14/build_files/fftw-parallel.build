@@ -1,0 +1,93 @@
+##############################################################################
+# $Id: fftw-parallel.build,v 1.7 2014/04/28 09:12:35 stapops Exp $
+##############################################################################
+# maali config file for fftw-parallel
+##############################################################################
+
+# allows us to substitute
+MAALI_TOOL_NAME_ORIG="fftw"
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://www.fftw.org/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="$MAALI_DEFAULT_MPI"
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ=""
+
+# add additional configure options
+#--enable-avx-- FFTW 3.3.2 is capable of using AVX intrinsics on AVX enabled processors (e.g. Intel Sandy Bridge and AMD Bulldozer)
+# note make check fails the basic tests with --enable-sse2
+if [ $MAALI_TOOL_VERSION == 2.1.5 ]; then
+  MAALI_TOOL_CONFIGURE='--enable-shared --enable-sse2 --enable-mpi --enable-openmp --enable-fortran --enable-type-prefix' 
+elif
+  MAALI_TOOL_CONFIGURE='--enable-shared --enable-sse2 --enable-mpi --enable-openmp --enable-fortran'
+                        -
+fi
+
+# runs in front of the configure line
+export CFLAGS="-fPIC"
+export FFLAGS="-fPIC"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_SET_SETENV='FFTW_HOME=$MAALI_APP_HOME FFTW_INCLUDE=$MAALI_APP_HOME/include FFTW_LIB=$MAALI_APP_HOME/lib'
+MAALI_MODULE_WHATIS="FFTW is a C subroutine library for computing the discrete Fourier transform (DFT) in one or more dimensions, of arbitrary input size, and of both real and complex data."
+
+##############################################################################
+
+function maali_build {
+
+  # prevent us from building in the same directory as the non parallel version
+  cd "$MAALI_BUILD_DIR"
+  mv $MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION $MAALI_TOOL_NAME-$MAALI_TOOL_VERSION
+
+  cd $MAALI_TOOL_BUILD_DIR
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    export F77=ifort
+  elif  [ "$MAALI_COMPILER_NAME" == "pgi" ]; then
+     export F77=pgfortran
+     export FFLAGS="-fast -Minfo" 
+     export CC=pgcc 
+     export CFLAGS="-fast -Minfo -fPIC"     
+  fi
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+  # Making single precision version with type prefix
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-single "
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make install"
+  maali_run "make clean"
+  # Making double precision version without type prefix
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE"
+  maali_run "make -j $MAALI_CORES"
+  maali_run "make install"
+  maali_run "make clean"
+  # Making double precision version with type prefix
+#  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE --enable-t"
+#  maali_run "make -j $MAALI_CORES"
+#  maali_run "make install"
+  
+}
+
+##############################################################################

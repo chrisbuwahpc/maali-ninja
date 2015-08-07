@@ -1,0 +1,96 @@
+##############################################################################
+# $Id: atlas.build ,v 1.12 2013/11/14 00:34:32 stapops Exp $
+##############################################################################
+# maali config file for ATLAS
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/math-atlas/files/Stable/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.bz2/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME$MAALI_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/ATLAS"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites 
+MAALI_TOOL_PREREQ=" "
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=" "
+
+# for auto-building module files
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_WHATIS="The ATLAS (Automatically Tuned Linear Algebra Software) project is an ongoing research effort focusing on applying empirical techniques in order to provide portable performance. At present, it provides C and Fortran77 interfaces to a portably efficient BLAS implementation, as well as a few routines from LAPACK."
+
+##############################################################################
+
+function maali_build {
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  mkdir build
+  cd build
+  
+  MAALI_CC=`which $CC`
+  MAALI_FC=`which $FC`
+  maali_run "../configure --prefix=$MAALI_INSTALL_DIR  -t 4 --shared --with-netlib-lapack-tarfile=$MAALI_SRC/lapack-3.4.2.tgz "
+
+  # picks up /usr/bin/gcc-4.6 on SLES
+  sed -i -e "s;/usr/bin/gcc-4.6;$MAALI_CC;g" Make.inc 
+  sed -i -e "s;/usr/bin/gfortran-4.6;$MAALI_FC;g" Make.inc 
+
+  sed -i -e 's;-DUNKNOWN -DUNKNOWN -DStringUNKNOWN;-DAdd_ -DF77_INTEGER=int -DStringSunStyle;g' Make.inc
+
+  maali_run "make"
+  maali_run "make check" 	
+  maali_run "make time"
+  maali_run "make install" 
+   
+}
+
+##############################################################################
+# NOTE atlas tests for cpu throttleing and if you get this message.
+#It appears you have cpu throttling enabled, which makes timings
+#unreliable and an ATLAS install nonsensical.  Aborting.
+#See ATLAS/INSTALL.txt for further information
+
+# in fedora20 install the kernel-tools 
+# the command is /usr/bin/cpupower  to change the power settings to 
+# install atlas.
+
+#[maali]$ cpupower frequency-info --governors
+#analyzing CPU 0:
+#performance powersave
+#[maali]$ cpupower frequency-info 
+#analyzing CPU 0:
+#  driver: intel_pstate
+#  CPUs which run at the same hardware frequency: 0
+#  CPUs which need to have their frequency coordinated by software: 0
+#  maximum transition latency: 0.97 ms.
+#  hardware limits: 1.20 GHz - 3.80 GHz
+#  available cpufreq governors: performance, powersave
+#  current policy: frequency should be within 1.20 GHz and 3.80 GHz.
+#                  The governor "powersave" may decide which speed to use
+#                  within this range.
+#  current CPU frequency is 1.20 GHz.
+#  boost state support:
+#    Supported: yes
+#    Active: yes
+#    25500 MHz max turbo 4 active cores
+#    25500 MHz max turbo 3 active cores
+#    25500 MHz max turbo 2 active cores
+#    25500 MHz max turbo 1 active cores
+
+# must be root to change settings!!!
+#[maali]$ cpupower frequency-set --governor performance  
+#Subcommand frequency-set needs root privileges
