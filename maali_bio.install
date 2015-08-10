@@ -1,0 +1,41 @@
+#!/bin/bash
+
+export MAALI_BUILDER_UID=ubuntu
+DEFAULT_CONFIG=nectar
+echo $MODULEPATH
+module load maali 
+
+cd ~/.maali/ubuntu14/build_files
+
+maali -t szip -v 2.1 -c ${DEFAULT_CONFIG}
+maali -t zlib -v 1.2.8 -c ${DEFAULT_CONFIG}
+maali -t openmpi -v 1.7.5 -c ${DEFAULT_CONFIG}
+maali -t python -v 2.7.9 -c ${DEFAULT_CONFIG}
+
+module list
+
+module load python/2.7.9
+module list
+
+maali -t cmake -v 3.2.3 -c ${DEFAULT_CONFIG} 
+
+# caution trying to install atlas math libraries 
+# most likely won't work in cloud as you need to turn off cpu throttling.
+# best option is to use the package installer tool.
+#maali -t atlas -v 3.10.2 -c ${DEFAULT_CONFIG} -d
+
+maali -t lapack -v 3.4.2 -c ${DEFAULT_CONFIG} 
+maali -t scalapack -v 2.0.2 -c ${DEFAULT_CONFIG}
+
+# install fftw libraries
+#maali -t fftw -v 2.1.5 -c ${DEFAULT_CONFIG}
+#maali -t fftw -v 3.3.2 -c ${DEFAULT_CONFIG}
+maali -t fftw -v 3.3.4 -c ${DEFAULT_CONFIG}
+
+#maali -t fftw-parallel -v 3.3.2 -c ${DEFAULT_CONFIG}
+#maali -t fftw-parallel -v 3.3.4 -c ${DEFAULT_CONFIG}
+
+maali -t numpy -v 1.6.2 -c ${DEFAULT_CONFIG} -d
+#maali -t numpy -v 1.8.0 -c ${DEFAULT_CONFIG} -d
+maali -t scipy -v 0.13.0 -c ${DEFAULT_CONFIG} -d
+
