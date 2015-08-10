@@ -29,7 +29,9 @@ function maali_python_build {
 # change to build directory
 cd $MAALI_TOOL_BUILD_DIR
 
+# test for mkl else default is blas from lapack and lapack itself
 # use mkl for performance (Current Intel compilers are different)
+if [[ -z $MKL_HOME ]]; then 
 cat <<EOF >site.cfg
 [mkl]
 library_dirs = $MKL_HOME/lib/intel64
@@ -39,6 +41,25 @@ lapack_libs = mkl_lapack95_lp64
 EOF
 
 export LDFLAGS='-lgomp'
+
+else # default to atlas install via package managment tool
+cat <<EOF >site.cfg
+[DEFAULT]
+library_dirs = /usr/lib
+include_dirs = /usr/include
+libraries = gfortran, gfortranbegin
+#[blas_opt]
+#libraries = f77blas, cblas, atlas
+#[lapack_opt]
+#libraries = lapack_atlas, f77blas, cblas, atlas
+#language = gfortran
+EOF
+#export BLAS=/nectar/ubuntu14/devel/gnu/4.8.4/lapack/3.4.2/lib/libblas.so
+#export LAPACK=/nectar/ubuntu14/devel/gnu/4.8.4/lapack/3.4.2/lib/liblapack.so
+###export LDFLAGS='-lgomp'
+
+fi
+
 
 maali_run "python setup.py config"
 maali_run "python setup.py build"
