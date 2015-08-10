@@ -1,0 +1,42 @@
+##############################################################################
+# $Id: scalapack.maali,v 1.5 2013/11/01 04:18:23 stapops Exp $
+##############################################################################
+# maali config file for ScaLAPACK/BLACS
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://netlib.org/scalapack/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tgz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tgz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites modules needed to install this new tool/package
+MAALI_TOOL_PREREQ="$MAALI_DEFAULT_MPI lapack/3.4.2"
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ="cmake/3.2.3"
+
+# Configuration flags for make/cmake.
+MAALI_TOOL_CONFIGURE='-DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_BUILD_TYPE:STRING=Release -DBLAS_LIBRARIES:PATH=${LAPACK}/lib/libblas.so -DLAPACK_LIBRARIES:PATH=${LAPACK}/lib/liblapack.so'
+
+# for auto-building module files
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+
+
+# currently not implemented
+MAALI_MODULE_WHATIS="ScaLAPACK is a library of high-performance linear algebra routines for parallel distributed memory machines \.
+  ScaLAPACK solves dense and banded linear systems, least squares problems, eigenvalue problems, and singular value problems."
+ 
+
+##############################################################################
+
