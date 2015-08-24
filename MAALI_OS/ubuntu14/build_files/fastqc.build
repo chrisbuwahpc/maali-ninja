@@ -1,0 +1,55 @@
+##############################################################################
+# $Id: fastqc.ibs,v 1.2 2013/11/01 01:28:39 stapops Exp $
+##############################################################################
+# ibs config file for FastQC
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/"$IBS_TOOL_NAME"_v$IBS_TOOL_VERSION.zip"
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/"$IBS_TOOL_NAME"_v$IBS_TOOL_VERSION.zip"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/FastQC"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+
+function ibs_build {
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  ibs_run "mv * $IBS_INSTALL_DIR"
+  ibs_run "chmod 755 $IBS_INSTALL_DIR/fastqc"
+}
+
+##############################################################################
+
+function ibs_module {
+
+cat <<EOF >$IBS_TOOL_MODULE
+#%Module######################################################################
+#
+# $IBS_TOOL modulefile
+#
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths you need to use $IBS_TOOL version $version"
+}
+set sys     [uname sysname]
+set version $IBS_TOOL_VERSION
+set tool    $IBS_TOOL_NAME
+if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+  module unload \$tool
+}
+
+module load java/1.6.0_38
+
+prepend-path PATH $IBS_INSTALL_DIR
+EOF
+}
+
+##############################################################################

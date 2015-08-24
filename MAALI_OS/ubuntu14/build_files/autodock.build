@@ -1,0 +1,71 @@
+###############################################################################
+# $Id: autodock.ibs,v 1.4 2013/12/11 08:13:28 stapops Exp $
+##############################################################################
+# ibs config file for autodock
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="http://autodock.scripps.edu/downloads/previous-releases/autodock-registration/tars/dist423/autodocksuite-${IBS_TOOL_VERSION}-src.tar.gz"
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/autodocksuite-${IBS_TOOL_VERSION}-src.tar.gz"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/src"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="apps"
+
+# tool pre-requisites
+IBS_TOOL_PREREQ=""
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after IBS_TOOL_PREREQ)
+IBS_TOOL_BUILD_PREREQ="$IBS_DEFAULT_MPI"
+
+# add additional configure options
+IBS_TOOL_CONFIGURE=''
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+
+##############################################################################
+
+function ibs_build {
+
+  # There are two
+  # 1-> Build Autodock
+  # 2-> Build Autogrid which depends on Autodock
+  # PS autodock and autogrid has to be in the same directory
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  # Build autodock
+  cd "$IBS_TOOL_BUILD_DIR"
+  cd autodock
+  ./configure --prefix=${IBS_INSTALL_DIR}
+  make
+  make install
+	
+  # Build autogrid
+  cd "$IBS_TOOL_BUILD_DIR"
+  cd autogrid
+  ./configure --prefix=${IBS_INSTALL_DIR}
+  make
+  make install
+
+  cd "$IBS_TOOL_BUILD_DIR"
+  chmod -R 755 autodock
+  chmod -R 755 autogrid
+  cd autodock
+  make clean
+
+  cd "$IBS_TOOL_BUILD_DIR"
+  chmod -R 755 autodock
+  chmod -R 755 autogrid
+  cd autogrid
+  make clean
+}
+
+##############################################################################

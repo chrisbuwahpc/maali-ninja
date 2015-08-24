@@ -411,7 +411,7 @@ EOF
 function maali_python_build {
   # should work with most python packages
 
-  # need to add the python library path to PYTHONPATH temporarily
+  # need to add the python library path to PYTHON PATH temporarily
   MAALI_OLD_PYTHONPATH=$PYTHONPATH
   MAALI_NEWPYTHONPATH="$MAALI_INSTALL_DIR/$MAALI_PYTHON_LIBDIR/python$PYTHON_LIB_VERSION/site-packages"
   export PYTHONPATH="$MAALI_NEWPYTHONPATH:$PYTHONPATH"
