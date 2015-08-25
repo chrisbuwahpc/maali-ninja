@@ -1,0 +1,63 @@
+##############################################################################
+# $Id: java.maali,v 1.5 2015/08/05 04:15:30 stapops Exp $
+##############################################################################
+# maali config file for Java
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="binary"
+
+# URL to download the source code from - it's java
+MAALI_URL=""
+
+#Older Style java ie version number is 1.7.0_65
+MAALI_JAVA_MAJOR_VERSION=`echo $MAALI_TOOL_VERSION | cut -d '.' -f 2`
+MAALI_JAVA_UPDATE_VERSION=`echo $MAALI_TOOL_VERSION | cut -d '_' -f 2`
+
+#Newer Stype Java ie 7 / 8
+#jdk-7u65-linux-x64.tar.gz
+#jdk-8u40-linux-x64.tar.gz
+echo $MAALI_TOOL_VERSION | grep -i -e 8u -e 7u
+if [ $? -eq 0 ]
+    then
+    MAALI_JAVA_MAJOR_VERSION=`echo $MAALI_TOOL_VERSION | cut -d 'u' -f 1`
+    MAALI_JAVA_UPDATE_VERSION=`echo $MAALI_TOOL_VERSION | cut -d 'u' -f 2`
+fi
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/jdk-"$MAALI_JAVA_MAJOR_VERSION"u"$MAALI_JAVA_UPDATE_VERSION"-linux-x64.tar.gz"
+
+# where the unpacked source code is located - no source code for you
+MAALI_TOOL_BUILD_DIR=""
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ=""
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_SETENV='JAVA_HOME=$MAALI_APP_HOME'
+
+##############################################################################
+
+function maali_unpack {
+  maali_wiki ".. supressing unpacking java source as it builds in place"
+}
+
+##############################################################################
+
+function maali_build {
+
+  cd $MAALI_INSTALL_DIR
+  cd ..
+  rmdir $MAALI_INSTALL_DIR
+  tar zxf $MAALI_DST
+  mv jdk$MAALI_TOOL_VERSION $MAALI_INSTALL_DIR
+  #Hmmm 7/8 unpacks like "jdk1.8.0_40" jdk1.{$MAALI_JAVA_MAJOR_VERSION}.0_{$MAALI_JAVA_MAJOR_VERSION}
+  echo jdk1.${MAALI_JAVA_MAJOR_VERSION}.0_${MAALI_JAVA_UPDATE_VERSION} >> /tmp/variable-test
+  mv jdk1.${MAALI_JAVA_MAJOR_VERSION}.0_${MAALI_JAVA_UPDATE_VERSION} $MAALI_INSTALL_DIR
+}
+
+##############################################################################
