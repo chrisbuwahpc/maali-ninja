@@ -1,67 +1,67 @@
 ###############################################################################
-# $Id: autodock.ibs,v 1.4 2013/12/11 08:13:28 stapops Exp $
+# $Id: autodock.build,v 1.4 2013/12/11 08:13:28 stapops Exp $
 ##############################################################################
-# ibs config file for autodock
+# maali config file for autodock
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://autodock.scripps.edu/downloads/previous-releases/autodock-registration/tars/dist423/autodocksuite-${IBS_TOOL_VERSION}-src.tar.gz"
+MAALI_URL="http://autodock.scripps.edu/downloads/previous-releases/autodock-registration/tars/dist423/autodocksuite-${MAALI_TOOL_VERSION}-src.tar.gz"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/autodocksuite-${IBS_TOOL_VERSION}-src.tar.gz"
+MAALI_DST="$MAALI_SRC/autodocksuite-${MAALI_TOOL_VERSION}-src.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/src"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/src"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="apps"
+MAALI_TOOL_TYPE="apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ=""
+MAALI_TOOL_PREREQ=""
 
-# tool build pre-requisites - not added to the module, only needed for building (loaded after IBS_TOOL_PREREQ)
-IBS_TOOL_BUILD_PREREQ="$IBS_DEFAULT_MPI"
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ="$MAALI_DEFAULT_MPI"
 
 # add additional configure options
-IBS_TOOL_CONFIGURE=''
+MAALI_TOOL_CONFIGURE=''
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
-
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="AutoDock is a suite of automated docking tools. It is designed to predict how small molecules, such as substrates or drug candidates, bind to a receptor of known 3D structure."
 ##############################################################################
 
-function ibs_build {
+function maali_build {
 
   # There are two
   # 1-> Build Autodock
   # 2-> Build Autogrid which depends on Autodock
   # PS autodock and autogrid has to be in the same directory
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
 
   # Build autodock
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
   cd autodock
-  ./configure --prefix=${IBS_INSTALL_DIR}
+  ./configure --prefix=${MAALI_INSTALL_DIR}
   make
   make install
 	
   # Build autogrid
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
   cd autogrid
-  ./configure --prefix=${IBS_INSTALL_DIR}
+  ./configure --prefix=${MAALI_INSTALL_DIR}
   make
   make install
 
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
   chmod -R 755 autodock
   chmod -R 755 autogrid
   cd autodock
   make clean
 
-  cd "$IBS_TOOL_BUILD_DIR"
+  cd "$MAALI_TOOL_BUILD_DIR"
   chmod -R 755 autodock
   chmod -R 755 autogrid
   cd autogrid
