@@ -1,49 +1,49 @@
 ##############################################################################
-# $Id: mrbayes.ibs,v 1.2 2013/11/13 07:44:12 stapops Exp $
+# $Id: mrbayes.build,v 1.2 2013/11/13 07:44:12 stapops Exp $
 ##############################################################################
-# ibs config file for Velvet
+# maali config file for Velvet
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://sourceforge.net/projects/$IBS_TOOL_NAME/files/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz/download"
+MAALI_URL="http://sourceforge.net/projects/$MAALI_TOOL_NAME/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz/download"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.gz"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME"_"$IBS_TOOL_VERSION/src"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION/src"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="openmpi/1.6.5 beagle-lib/1.1"
+MAALI_TOOL_PREREQ="openmpi/1.7.5 beagle-lib/1.1"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PATH=1
 
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  ibs_run "autoconf"
-  ibs_run "./configure --prefix=$IBS_INSTALL_DIR --enable-mpi=yes --with-beagle=$BEAGLE_LIB_DIR"
+  maali_run "autoconf"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR --enable-mpi=yes --with-beagle=$BEAGLE_LIB_DIR"
 
-  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
     sed -i -e 's/-ffast-math/-xHost/g' Makefile
   fi
 
-  ibs_run "make"
-  mkdir -p $IBS_INSTALL_DIR/bin
+  maali_run "make"
+  mkdir -p $MAALI_INSTALL_DIR/bin
 
-#  ibs_run "make install BINDIR=$IBS_INSTALL_DIR/bin/"
+#  maali_run "make install BINDIR=$MAALI_INSTALL_DIR/bin/"
 #  install target missing for 3.2.1
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
-  ibs_run "cp mb $IBS_INSTALL_DIR/bin/."
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "cp mb $MAALI_INSTALL_DIR/bin/."
 
 }
 
