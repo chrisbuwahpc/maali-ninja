@@ -1,45 +1,45 @@
 ##############################################################################
-# $Id: genomeanalysistk.ibs,v 1.1 2013/10/30 06:17:20 stapops Exp $
+# $Id: genomeanalysistk.maali,v 1.1 2013/10/30 06:17:20 stapops Exp $
 ##############################################################################
-# ibs config file for GenomeAnalysisTK
+# maali config file for GenomeAnalysisTK
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
 
 # URL to download the source code from - need to register
-IBS_URL=""
+MAALI_URL=""
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.tar.bz2"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.bz2"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION-"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION-"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="java/1.7.0_45"
+MAALI_TOOL_PREREQ="java/8u40"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
-
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="The Genome Analysis Toolkit or GATK is a software package developed at the Broad Institute to analyze high-throughput sequencing data."
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"*
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"*
 
-  mkdir -p "$IBS_INSTALL_DIR/jar"
-  ibs_run "install -m 644 GenomeAnalysisTK.jar $IBS_INSTALL_DIR/jar"
+  mkdir -p "$MAALI_INSTALL_DIR/jar"
+  maali_run "install -m 644 GenomeAnalysisTK.jar $MAALI_INSTALL_DIR/jar"
 
-  mkdir -p "$IBS_INSTALL_DIR/bin"
-  cat <<EOF >"$IBS_INSTALL_DIR/bin/gatk"
+  mkdir -p "$MAALI_INSTALL_DIR/bin"
+  cat <<EOF >"$MAALI_INSTALL_DIR/bin/gatk"
 #!/bin/bash
 
-java -Xmx4g -jar \$IBS_GENOMEANALYSISTK_HOME/jar/GenomeAnalysisTK.jar \$*
+java -Xmx4g -jar \$MAALI_GENOMEANALYSISTK_HOME/jar/GenomeAnalysisTK.jar \$*
 EOF
-  ibs_run "chmod 755 $IBS_INSTALL_DIR/bin/gatk"
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/gatk"
 }
 
 ##############################################################################
