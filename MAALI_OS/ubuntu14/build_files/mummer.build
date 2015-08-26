@@ -1,55 +1,55 @@
 ##############################################################################
-# $Id: mummer.ibs,v 1.4 2013/11/21 09:08:57 stapops Exp $
+# $Id: mummer.build,v 1.4 2013/11/21 09:08:57 stapops Exp $
 ##############################################################################
-# ibs config file for mummer
+# maali config file for mummer
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://sourceforge.net/projects/mummer/files/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/MUMmer$IBS_TOOL_VERSION.tar.gz/download"
+MAALI_URL="http://sourceforge.net/projects/mummer/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/MUMmer$MAALI_TOOL_VERSION.tar.gz/download"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/MUMmer$IBS_TOOL_VERSION.tar.gz"
+MAALI_DST="$MAALI_SRC/MUMmer$MAALI_TOOL_VERSION.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/MUMmer$IBS_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/MUMmer$MAALI_TOOL_VERSION"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # for auto-building module files
-IBS_MODULE_PATH=1
+MAALI_MODULE_PATH=1
 
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
     sed -i -e 's/g++/icpc/g' Makefile
     sed -i -e 's/gcc/icc/g' Makefile
   fi
 
-  sed -i -e 's!BIN_DIR     := $(TOP_DIR)!BIN_DIR     := '$IBS_INSTALL_DIR'/bin!g' Makefile
-  sed -i -e 's!AUX_BIN_DIR := $(TOP_DIR)/aux_bin!AUX_BIN_DIR := '$IBS_INSTALL_DIR'/aux_bin!g' Makefile
+  sed -i -e 's!BIN_DIR     := $(TOP_DIR)!BIN_DIR     := '$MAALI_INSTALL_DIR'/bin!g' Makefile
+  sed -i -e 's!AUX_BIN_DIR := $(TOP_DIR)/aux_bin!AUX_BIN_DIR := '$MAALI_INSTALL_DIR'/aux_bin!g' Makefile
 
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/aux_bin"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/scripts"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/aux_bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/scripts"
 
-  ibs_run "make"
+  maali_run "make"
 
   # fix the scripts
-  ibs_run "cp scripts/Foundation.pm $IBS_INSTALL_DIR/scripts"
-  ibs_run "chmod 644 $IBS_INSTALL_DIR/scripts/Foundation.pm"
+  maali_run "cp scripts/Foundation.pm $MAALI_INSTALL_DIR/scripts"
+  maali_run "chmod 644 $MAALI_INSTALL_DIR/scripts/Foundation.pm"
   
-  sed -i -e "s!$IBS_TOOL_BUILD_DIR/scripts!$IBS_INSTALL_DIR/scripts!g" $IBS_INSTALL_DIR/bin/dnadiff
-  sed -i -e "s!$IBS_TOOL_BUILD_DIR/scripts!$IBS_INSTALL_DIR/scripts!g" $IBS_INSTALL_DIR/bin/mapview
-  sed -i -e "s!$IBS_TOOL_BUILD_DIR/scripts!$IBS_INSTALL_DIR/scripts!g" $IBS_INSTALL_DIR/bin/mummerplot
-  sed -i -e "s!$IBS_TOOL_BUILD_DIR/scripts!$IBS_INSTALL_DIR/scripts!g" $IBS_INSTALL_DIR/bin/nucmer
-  sed -i -e "s!$IBS_TOOL_BUILD_DIR/scripts!$IBS_INSTALL_DIR/scripts!g" $IBS_INSTALL_DIR/bin/promer
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/dnadiff
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/mapview
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/mummerplot
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/nucmer
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/promer
 }
 
 ##############################################################################
