@@ -1,43 +1,44 @@
 ##############################################################################
-# $Id: bwa.ibs,v 1.4 2014/05/27 04:35:15 stapops Exp $
+# $Id: bwa.build,v 1.4 2014/05/27 04:35:15 stapops Exp $
 ##############################################################################
-# ibs config file for bfast
+# maali config file for bfast
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://sourceforge.net/projects/bio-bwa/files/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.bz2/download"
+MAALI_URL="http://sourceforge.net/projects/bio-bwa/files/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2/download"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION.tar.bz2"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
-IBS_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_WHATIS="Burrows-Wheeler Aligner BWA is a software package for mapping low-divergent sequences against a large reference genome, such as the human genome."
 
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
       sed -i -e 's/gcc/icc/g' Makefile
       sed -i -e 's/g++/icpc/g' Makefile
   fi
 
-  ibs_run "make"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
-  ibs_run "mv bwa *.pl $IBS_INSTALL_DIR/bin"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/share/man/man1"
-  ibs_run "mv bwa.1 $IBS_INSTALL_DIR/share/man/man1"
+  maali_run "make"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "mv bwa *.pl $MAALI_INSTALL_DIR/bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/share/man/man1"
+  maali_run "mv bwa.1 $MAALI_INSTALL_DIR/share/man/man1"
 }
 
 ##############################################################################
