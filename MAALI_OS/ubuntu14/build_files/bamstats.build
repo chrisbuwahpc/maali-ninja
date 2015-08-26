@@ -1,46 +1,47 @@
 ##############################################################################
-# $Id: bamstats.ibs,v 1.1 2014/02/27 08:29:14 stapops Exp $
+# $Id: bamstats.build,v 1.1 2014/02/27 08:29:14 stapops Exp $
 ##############################################################################
-# ibs config file for BAMStats
+# maali config file for BAMStats
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
 
 # URL to download the source code from - need to register
 #http://sourceforge.net/projects/bamstats/files/BAMStats-1.25.zip/download
-IBS_URL="http://sourceforge.net/projects/$IBS_TOOL_NAME/files/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.zip/download"
+MAALI_URL="http://sourceforge.net/projects/$MAALI_TOOL_NAME/files/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.zip/download"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.zip"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.zip"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="java/1.7.0_45"
+MAALI_TOOL_PREREQ="java/8u40"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="BAMStats, is a simple software tool built on the Picard Java API, which  can calculate and graphically display various metrics derived from SAM/BAM files of value in QC assessments."
 
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  mkdir -p "$IBS_INSTALL_DIR/jar"
-  mkdir -p "$IBS_INSTALL_DIR/bin"
+  mkdir -p "$MAALI_INSTALL_DIR/jar"
+  mkdir -p "$MAALI_INSTALL_DIR/bin"
 
-  cat <<EOF >"$IBS_INSTALL_DIR/bin/bamstats"
+  cat <<EOF >"$MAALI_INSTALL_DIR/bin/bamstats"
 #!/bin/bash
 
-java -Xmx8g -jar \$IBS_BAMSTATS_HOME/jar/$IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.jar \$*
+java -Xmx8g -jar \$MAALI_BAMSTATS_HOME/jar/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.jar \$*
 EOF
-  ibs_run "chmod 755 $IBS_INSTALL_DIR/bin/bamstats"
-  ibs_run "install -m 644 $IBS_TOOL_NAME_ORIG-$IBS_TOOL_VERSION.jar $IBS_INSTALL_DIR/jar"
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/bamstats"
+  maali_run "install -m 644 $MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.jar $MAALI_INSTALL_DIR/jar"
 }
 
 ##############################################################################
