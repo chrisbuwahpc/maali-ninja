@@ -1,5 +1,5 @@
 ##############################################################################
-# $Id: beast.ibs,v 1.5 2013/12/18 04:09:03 stapops Exp $
+# $Id: beast.build,v 1.5 2013/12/18 04:09:03 stapops Exp $
 ##############################################################################
 # ibs config file for Beast
 ##############################################################################
@@ -33,53 +33,60 @@ fi
 IBS_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="java/1.6.0_38"
+IBS_TOOL_PREREQ="java/8u40  beagle-lib/1.1"
+
+# for auto-building module files
+MAALI_MODULE_SET_SETENV="BEAST_DIR=${MAALI_INSTALL_DIR}"
+MAALI_MODULE_SET_SETENV="BEAST_LIB=${MAALI_INSTALL_DIR}/lib"
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_WHATIS="Bayesian evolutionary analysis by sampling trees-(BEAST)2 is a cross-platform program for Bayesian phylogenetic analysis of molecular sequences."
 
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  if [ $IBS_TOOL_VERSION_MAJOR -lt 2 ]; then 
+  if [ $MAALI_TOOL_VERSION_MAJOR -lt 2 ]; then 
     cd native
 
     #Stupid Beast, developers pacakged mac object files by default on 1.8.0
-    rm -rf $IBS_TOOL_BUILD_DIR/native/*.o
+    rm -rf $MAALI_TOOL_BUILD_DIR/native/*.o
 
-    if [ "$IBS_COMPILER_NAME" == "intel" ]; then
-      ibs_run "make -f Makefile.icc"
-    elif [ "$IBS_COMPILER_NAME" == "gcc" ]; then
-      ibs_run "make -f Makefile.linux"
+    if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+      maali_run "make -f Makefile.icc"
+    elif [ "$MAALI_COMPILER_NAME" == "gcc" ]; then
+      maali_run "make -f Makefile.linux"
     else
       echo "Only gcc and intel are supported"
       exit 1;
     fi
-    ibs_run "mv libNucleotideLikelihoodCore.so ../lib/"
-    ibs_run "rm -f ../lib/libNucleotideLikelihoodCore32.so"
+    maali_run "mv libNucleotideLikelihoodCore.so ../lib/"
+    maali_run "rm -f ../lib/libNucleotideLikelihoodCore32.so"
 
     cd ..
   fi
 
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/"
 
-  if [ $IBS_TOOL_VERSION_MAJOR -lt 2 ]; then 
-    ibs_run "mv bin doc examples images lib *.txt $IBS_INSTALL_DIR"
-    cat <<EOF >"$IBS_INSTALL_DIR/bin/beast"
+  if [ $MAALI_TOOL_VERSION_MAJOR -lt 2 ]; then 
+    maali_run "mv bin doc examples images lib *.txt $MAALI_INSTALL_DIR"
+    cat <<EOF >"$MAALI_INSTALL_DIR/bin/beast"
 #!/bin/bash
 
 java -Xms64m -Xmx1024m -Djava.library.path="\$BEAST_LIB:\$BEAGLE_LIB_DIR/lib" -cp "\$BEAST_LIB/beast.jar:\$BEAST_LIB/beast-beagle.jar" dr.app.beast.BeastMain \$*
 EOF
   else
-    ibs_run "mv bin examples images lib *.txt $IBS_INSTALL_DIR"
+    maali_run "mv bin examples images lib *.txt $MAALI_INSTALL_DIR"
 
-    cat <<EOF >"$IBS_INSTALL_DIR/bin/beast"
+    cat <<EOF >"$MAALI_INSTALL_DIR/bin/beast"
 #!/bin/bash
 
 java -Xms256m -Xmx1024m -Djava.library.path="\$BEAST_LIB" -cp "\$BEAST_LIB/beast.jar" beast.app.beastapp.BeastMain $*
 EOF
   fi
 
-  ibs_run "chmod 755 $IBS_INSTALL_DIR/bin/beast"
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/beast"
 
 }
 
