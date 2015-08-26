@@ -1,5 +1,5 @@
 ##############################################################################
-# $Id: fastqc.MAALI,v 1.2 2013/11/01 01:28:39 stapops Exp $
+# $Id: fastqc.build,v 1.2 2013/11/01 01:28:39 stapops Exp $
 ##############################################################################
 # MAALI config file for FastQC
 ##############################################################################
@@ -23,7 +23,7 @@ MAALI_TOOL_TYPE="bio-apps"
 MAALI_TOOL_PREREQ="java/8u40"
 
 # for auto-building module files
-MALLI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_WHATIS="FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines."
 
 function MAALI_build {
