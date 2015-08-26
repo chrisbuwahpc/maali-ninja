@@ -19,6 +19,13 @@ IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME"
 # type of tool (eg. apps, devel, python, etc.)
 IBS_TOOL_TYPE="bio-apps"
 
+# for auto-building module files
+MAALI_MODULE_SET_SETENV="GENEID_PARAM_DIR=${MAALI_INSTALL_DIR}/param"
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="geneid is a program to predict genes along a DNA sequence in a large set of organisms."
+
+##############################################################################
+
 function ibs_build {
   cd "$IBS_TOOL_BUILD_DIR"
 
@@ -36,29 +43,3 @@ function ibs_build {
 
 ##############################################################################
 
-function ibs_module {
-
-cat <<EOF >$IBS_TOOL_MODULE
-#%Module######################################################################
-#
-# $IBS_TOOL modulefile
-#
-proc ModulesHelp { } {
-  puts stderr "Sets up the paths you need to use $IBS_TOOL version $version"
-}
-set sys     [uname sysname]
-set version $IBS_TOOL_VERSION
-set tool    $IBS_TOOL_NAME
-if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
-  module unload \$tool
-}
-
-# need to check the compiler is defined
-
-setenv       GENEID_PARAM_DIR $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/param
-prepend-path PATH             $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/bin
-
-EOF
-}
-
-##############################################################################
