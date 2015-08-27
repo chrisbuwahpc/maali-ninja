@@ -109,5 +109,31 @@ cd ~/maali
 export MAALI_BUILDER_UID=ubuntu
   
 maali -t bowtie2 -v 2.2.6 -c nectar
+maali -t samtools -v 1.2 -c nectar
 
 maali -t openmpi -v 1.7.5 -c nectar 
+maali -t picard-tools -v 1.123 -c nectar
+
+maali -t mothur -v 1.37.0 -c nectar
+maali -t mrbayes -v 3.2.2 -c nectar
+maali -t geneid -v 1.4.4 -c nectar
+maali -t fastqc -v 0.11.2 -c nectar
+maali -t exabayes -v 1.4.1 -c nectar
+maali -t bwa -v 0.7.5a -c nectar
+maali -t bwa -v 0.7.9a -c nectar
+maali -t beagle-lib -v 2.1.2 -c nectar
+maali -t beast -v 2.1.3 -c nectar
+maali -t mummer -v 3.23 -c nectar 
+
+#maali -t gatk -v 3.4.46 -c nectar
+#maali -t tophat -v 2.0.12 -c nectar
+#maali -t trimmomatic -v 0.32 -c nectar
+#maali -t trinityrnseq -v 20140717 -c nectar
+#maali -t tassel -v 3.0 -c nectar
+maali -t ncbi-blast -v 2.2.29 -c nectar
+
+maali -t structure -v 2.3.4 -c nectar
+maali -t velvet -v 1.2.10 -c nectar
+#maali -t oases -v 0.2.08 -c nectar
+
+maali -t autodock -v 4.2.3 -c nectar
