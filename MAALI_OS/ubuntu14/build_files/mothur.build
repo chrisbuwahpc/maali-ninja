@@ -1,0 +1,50 @@
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="https://github.com/${MAALI_TOOL_NAME}/${MAALI_TOOL_NAME}/archive/v{MAALI_TOOL_VERSION}.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/${MAALI_TOOL_NAME}-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/${MAALI_TOOL_NAME}-${MAALI_TOOL_VERSION}/source"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="The mothur project seeks to develop a single piece of open-source, expandable software to fill the bioinformatics needs of the microbial ecology community."
+
+##############################################################################
+
+function maali_build {
+
+  cd $MAALI_TOOL_BUILD_DIR
+
+  # Perform gymnastics on the makefile before building
+  sed -i -e 's/USEMPI ?= no/USEMPI ?= yes/' makefile
+  sed -i -e 's/TARGET_ARCH += -arch x86_64/#TARGET_ARCH += -arch x86_64/' makefile
+  sed -i -e 's/#CXXFLAGS += -mtune=native -march=native/CXXFLAGS += -mtune=native -march=native/' makefile
+#  sed -i -e 's/CXX = mpic++/CXX = mpi/' makefile
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "make -j$MAALI_CORES"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "install -m 755 mothur $MAALI_INSTALL_DIR/bin/"
+  maali_run "install -m 755 uchime  $MAALI_INSTALL_DIR/bin/"
+
+  if [ -d lookupFiles ]; then
+    maali_run "mkdir -p $MAALI_INSTALL_DIR/bin/lookupFiles/"
+    for file in `ls lookupFiles/*.*`
+     do
+	maali_run "install -m 644 $file $MAALI_INSTALL_DIR/bin/lookupFiles/"
+     done
+  fi
+
+}
+
+##############################################################################
