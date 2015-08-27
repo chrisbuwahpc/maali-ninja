@@ -8,8 +8,7 @@
 MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
 
 # URL to download the source code from - need to register
-MAALI_URL="http://sourceforge.net/projects/picard/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VER
-SION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.zip/download"
+MAALI_URL="http://github.com/broadinstitute/picard/releases/download/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.zip"
 
 # location we are downloading the source code to
 MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.zip"
@@ -35,8 +34,7 @@ function maali_build {
   mkdir -p "$MAALI_INSTALL_DIR/bin"
   for jar in *.jar
   do
-    toolname=$(echo "$jar" | cut -d '.' -f 1 | cut -d '-' -f 1 | tr '[:upper:]' '[
-:lower:]')
+    toolname=$(echo "$jar" | cut -d '.' -f 1 | cut -d '-' -f 1 | tr '[:upper:]' '[:lower:]')
     cat <<EOF >"$MAALI_INSTALL_DIR/bin/$toolname"
 #!/bin/bash
 
