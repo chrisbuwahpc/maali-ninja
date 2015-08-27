@@ -26,11 +26,13 @@ MAALI_TOOL_PREREQ="java/8u40"
 MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_WHATIS="FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines."
 
-function MAALI_build {
-  cd "$MAALI_TOOL_BUILD_DIR"
 
-  MAALI_run "mv * $MAALI_INSTALL_DIR"
-  MAALI_run "chmod 755 $MAALI_INSTALL_DIR/fastqc"
+##############################################################################
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "mkdir -p  $MAALI_INSTALL_DIR/bin"
+  maali_run "mv * $MAALI_INSTALL_DIR/bin"
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/fastqc"
 }
 
 ##############################################################################
