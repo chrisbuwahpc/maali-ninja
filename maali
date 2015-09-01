@@ -464,7 +464,7 @@ function maali_unpack {
   cd $MAALI_BUILD_DIR
 
   if [ ! -f "$MAALI_DST" ]; then
-    echo "$MAALI_DST does not exit"
+    echo "$MAALI_DST does not exist"
     exit 1
   fi
 
