@@ -28,6 +28,7 @@ MAALI_MODULE_SET_LD_LIBRARY_PATH=1
 MAALI_MODULE_SET_MANPATH=1
 MAALI_MODULE_SET_PKG_CONFIG_PATH=1
 MAALI_MODULE_SET_PYTHONPATH=1
+MAALI_MODULE_WHATIS="Python is a widely used general-purpose, high-level programming language."
 
 ##############################################################################
 
