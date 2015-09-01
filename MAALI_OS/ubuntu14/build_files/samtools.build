@@ -23,7 +23,7 @@ MAALI_TOOL_TYPE="bio-apps"
 MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_SET_LD_LIBRARY_PATH=1
 MAALI_MODULE_SET_SETENV='BAM_ROOT=$MAALI_APP_HOME'
-
+MAALI_MODULE_WHATIS="Samtools is a suite of programs for interacting with high-throughput sequencing data."
 ##############################################################################
 
 function maali_build {
