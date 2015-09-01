@@ -1,55 +1,55 @@
 ##############################################################################
 # $Id: velvet.ibs,v 1.8 2013/12/03 08:26:43 stapops Exp $
 ##############################################################################
-# ibs config file for Velvet
+# maali config file for Velvet
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="http://www.ebi.ac.uk/~zerbino/velvet/"$IBS_TOOL_NAME"_"$IBS_TOOL_VERSION".tgz"
+MAALI_URL="http://www.ebi.ac.uk/~zerbino/velvet/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION".tgz"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/"$IBS_TOOL_NAME"_"$IBS_TOOL_VERSION".tgz"
+MAALI_DST="$MAALI_SRC/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION".tgz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/"$IBS_TOOL_NAME"_"$IBS_TOOL_VERSION
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="bioperl/1.6.901"
+MAALI_TOOL_PREREQ="bioperl/1.6.924"
 
 # for auto-building module files
-IBS_MODULE_SET_PATH=1
-IBS_MODULE_SET_PERLLIB=1
-
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PERLLIB=1
+MAALI_MODULE_WHATIS=""
 ##############################################################################
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR"
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
 
-  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
     sed -i -e 's/CC = gcc/CC = icc/g' Makefile
   fi
 
-  ibs_run "make"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin/"
-  ibs_run "mv velvetg velveth contrib/shuffleSequences_fasta/shuffleSequences_fastq.pl contrib/shuffleSequences_fasta/shuffleSequences_fasta.pl $IBS_INSTALL_DIR/bin/"
-  ibs_run "mkdir -p $IBS_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
-  ibs_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOptimiser.pl $IBS_INSTALL_DIR/bin/"
-  ibs_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOpt/ $IBS_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
-  ibs_run "make clean"
-  ibs_run "make OPENMP=1"
-  ibs_run "mv velvetg $IBS_INSTALL_DIR/bin/velvetg_OMP"
-  ibs_run "mv velveth $IBS_INSTALL_DIR/bin/velveth_OMP"
-  ibs_run "make clean"
-  ibs_run "sed -i -e 's/31/99/g' Makefile"
-  ibs_run "make OPENMP=1"
-  ibs_run "mv velvetg $IBS_INSTALL_DIR/bin/velvetg_max99_OMP"
-  ibs_run "mv velveth $IBS_INSTALL_DIR/bin/velveth_max99_OMP"
+  maali_run "make"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin/"
+  maali_run "mv velvetg velveth contrib/shuffleSequences_fasta/shuffleSequences_fastq.pl contrib/shuffleSequences_fasta/shuffleSequences_fasta.pl $MAALI_INSTALL_DIR/bin/"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
+  maali_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOptimiser.pl $MAALI_INSTALL_DIR/bin/"
+  maali_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOpt/ $MAALI_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
+  maali_run "make clean"
+  maali_run "make OPENMP=1"
+  maali_run "mv velvetg $MAALI_INSTALL_DIR/bin/velvetg_OMP"
+  maali_run "mv velveth $MAALI_INSTALL_DIR/bin/velveth_OMP"
+  maali_run "make clean"
+  maali_run "sed -i -e 's/31/99/g' Makefile"
+  maali_run "make OPENMP=1"
+  maali_run "mv velvetg $MAALI_INSTALL_DIR/bin/velvetg_max99_OMP"
+  maali_run "mv velveth $MAALI_INSTALL_DIR/bin/velveth_max99_OMP"
 
 }
 
