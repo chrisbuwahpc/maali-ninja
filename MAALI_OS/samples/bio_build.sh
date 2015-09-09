@@ -14,8 +14,9 @@ sudo apt-get install git
 sudo apt-get install make
 
 # install gnu compilers
-sudo apt-get install gcc-gfortran 
-sudo apt-get install gcc-c++
+sudo apt-get install gfortran 
+sudo apt-get install g++
+sudo apt-get install gcc
 
 # install environment software
 sudo apt-get install environment-modules
@@ -125,14 +126,20 @@ maali -t beagle-lib -v 2.1.2 -c nectar
 maali -t beast -v 2.1.3 -c nectar
 maali -t mummer -v 3.23 -c nectar 
 
-#maali -t gatk -v 3.4.46 -c nectar
-#maali -t tophat -v 2.0.12 -c nectar
+maali -t genomeanalysistk -v 3.4.46 -c nectar
+
+maali -t python -v 2.6.9 -c nectar
+maali -t python-boost -v 1.55.0 -c nectar
+
+maali -t tophat -v 2.0.12 -c nectar
+
 #maali -t trimmomatic -v 0.32 -c nectar
 #maali -t trinityrnseq -v 20140717 -c nectar
 #maali -t tassel -v 3.0 -c nectar
 maali -t ncbi-blast -v 2.2.29 -c nectar
 
 maali -t structure -v 2.3.4 -c nectar
+maali -t bioperl -v 1.6.924 -c nectar
 maali -t velvet -v 1.2.10 -c nectar
 #maali -t oases -v 0.2.08 -c nectar
 
