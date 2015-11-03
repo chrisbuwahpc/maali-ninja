@@ -1,0 +1,38 @@
+##############################################################################
+# $Id: mira.ibs,v 1.1 2014/07/30 05:00:18 stapops Exp $
+##############################################################################
+# ibs config file for mira
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GNU_COMPILERS"
+
+# requires gcc > 4.4.7:
+#  When using gcc, you need to have gcc >= 4.6.x. You have only 4.4.7, aborting.
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/mira-assembler/files/MIRA/stable/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="boost/1.55.0"
+# gperftools/2.2.1"
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ=""
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# add additional configure options
+
+MAALI_TOOL_CONFIGURE='--with-boost=$MAALI_BOOST_HOME --with-tcmalloc-dir=$MAALI_GPERFTOOLS_HOME/lib/libtcmalloc.a'
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+

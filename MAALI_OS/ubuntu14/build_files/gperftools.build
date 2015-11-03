@@ -1,0 +1,31 @@
+##############################################################################
+# $Id: gperftools.maali,v 1.1 2014/07/30 07:25:50 stapops Exp $
+##############################################################################
+# maali config file for gperftools
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="https://googledrive.com/host/0B6NtGsLhIcf7MWxMMF9JdTN3UVk/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ=""
+
+# for auto-building module files
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_C_INCLUDE_PATH=1
+MAALI_MODULE_SET_CPLUS_INCLUDE_PATH=1
+MAALI_MODULE_WHATIS="Profile analysis tool"
+##############################################################################
