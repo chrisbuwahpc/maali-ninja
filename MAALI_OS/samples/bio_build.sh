@@ -2,16 +2,12 @@
 sudo apt-get update
 # install editors - note nano is already installed
 sudo apt-get install xemacs21
-sudo apt-get install xemacs-packages-base-el
-sudo apt-get install xemacs-packages-extra-el
+sudo apt-get install xemacs21-basesupport-el
 sudo apt-get install x11-apps
 sudo apt-get install xauth
 
 # install software build tools
-sudo apt-get install bc 
-sudo apt-get install wget 
-sudo apt-get install git
-sudo apt-get install make
+sudo apt-get install bc wget git make unzip 
 
 # install gnu compilers
 sudo apt-get install gfortran 
@@ -21,12 +17,6 @@ sudo apt-get install gcc
 # install environment software
 sudo apt-get install environment-modules
 
-# install atlas math libs.
-sudo apt-get install atlas 
-sudo apt-get install atlas-devel
-sudo apt-get install atlas-static
-sudo apt-get install atlas-sse2-static   
-
 # git the latest maali
 git clone https://github.com/chrisbpawsey/maali.git
 
@@ -34,6 +24,8 @@ git clone https://github.com/chrisbpawsey/maali.git
 sudo mkdir /nectar
 sudo chown -R ubuntu:ubuntu /nectar
 
+cd maali
+# you should find a file called maali.config
 # edit maali.config file in the maali directory
 # so that it looks like this!
 MAALI_OS=ubuntu14
@@ -62,10 +54,10 @@ MAALI_SRC="$MAALI_ROOT/src"
 
 cd /usr/share/modules/init/
 
-
-
 # next step format modulepath file
-# use sudo xemacs .modulepath
+# use sudo xemacs .modulespath
+# use sudo nano .modulespath
+# use sudo vi .modulespath
 
 #add these paths to module 
 /nectar/ubuntu14/modulefiles/tools
