@@ -1,0 +1,105 @@
+##############################################################################
+# $Id: netcdf.maali,v 1.15 2014/05/14 09:23:15 stapops Exp $
+##############################################################################
+# maali config file for netcdf
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://www.unidata.ucar.edu/downloads/$MAALI_TOOL_NAME/ftp/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--enable-netcdf-4'
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="szip/2.1 zlib/1.2.7 hdf5/1.8.12"
+
+# runs in front of the configure line
+# separate c++ and fortran wrappers
+MAALI_TOOL_VERSION_C=`echo $MAALI_TOOL_VERSION | cut -d '.' -f1,2`
+MAALI_TOOL_VERSION_CXX="4.2"
+MAALI_TOOL_VERSION_FC="4.2"
+
+# for auto-building module files
+
+MAALI_MODULE_SET_SETENV="NETCDF=$MAALI_INSTALL_DIR"
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1 
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_WHATIS="NetCDF is a set of software libraries and self-describing, machine-independent data formats that support the creation, access, and sharing of array-oriented scientific data."
+
+###############################################################################
+
+function maali_build {
+  MAALI_TOOL_CONFIGURE_EVAL=`eval echo "$MAALI_TOOL_CONFIGURE"`
+
+  export CFLAGS="-fPIC -I$MAALI_HDF5_HOME/include -I$MAALI_ZLIB_HOME/include -I$MAALI_SZIP_HOME/include -L$MAALI_HDF5_HOME/lib -L$MAALI_ZLIB_HOME/lib -L$MAALI_SZIP_HOME/lib"
+  export LDFLAGS="-L$MAALI_HDF5_HOME/lib -L$MAALI_ZLIB_HOME/lib -L$MAALI_SZIP_HOME/lib"
+
+  if [ "$MAALI_TOOL_VERSION_C" == "4.2" ]; then
+    # C library
+    cd "$MAALI_TOOL_BUILD_DIR"
+    maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE_EVAL"
+    maali_run "make"
+    maali_run "make install"
+
+    # C++ library
+    if [ ! -f "$MAALI_SRC/$MAALI_TOOL_NAME-cxx4-$MAALI_TOOL_VERSION_CXX.tar.gz" ]; then
+      wget -O "$MAALI_SRC/$MAALI_TOOL_NAME-cxx4-$MAALI_TOOL_VERSION_CXX.tar.gz" -q "http://www.unidata.ucar.edu/downloads/$MAALI_TOOL_NAME/ftp/$MAALI_TOOL_NAME-cxx4-$MAALI_TOOL_VERSION_CXX.tar.gz"
+    fi
+
+    cd ..
+    tar zxf "$MAALI_SRC/$MAALI_TOOL_NAME-cxx4-$MAALI_TOOL_VERSION_CXX.tar.gz"
+    cd "$MAALI_TOOL_NAME-cxx4-$MAALI_TOOL_VERSION_CXX"
+
+    export CFLAGS=""
+    export CPPFLAGS="-I$MAALI_INSTALL_DIR/include -L$MAALI_INSTALL_DIR/lib"
+    export LDFLAGS="-L$MAALI_INSTALL_DIR/lib"
+
+    maali_run "./configure --prefix=$MAALI_INSTALL_DIR --enable-shared"
+    maali_run "make"
+    maali_run "make install"
+
+    # fortran library
+    if [ ! -f "$MAALI_SRC/$MAALI_TOOL_NAME-fortran-$MAALI_TOOL_VERSION_FC.tar.gz" ]; then
+      wget -O "$MAALI_SRC/$MAALI_TOOL_NAME-fortran-$MAALI_TOOL_VERSION_FC.tar.gz" -q "http://www.unidata.ucar.edu/downloads/$MAALI_TOOL_NAME/ftp/$MAALI_TOOL_NAME-fortran-$MAALI_TOOL_VERSION_FC.tar.gz"
+    fi
+
+    export CFLAGS=""
+    export CPPFLAGS="-I$MAALI_INSTALL_DIR/include -L$MAALI_INSTALL_DIR/lib"
+    export FCFLAGS="-I$MAALI_INSTALL_DIR/include -L$MAALI_INSTALL_DIR/lib"
+    export LDFLAGS="-L$MAALI_INSTALL_DIR/lib"
+    export LD_LIBRARY_PATH="$MAALI_INSTALL_DIR/lib:$LD_LIBRARY_PATH"
+
+    cd ..
+    tar zxf "$MAALI_SRC/$MAALI_TOOL_NAME-fortran-$MAALI_TOOL_VERSION_FC.tar.gz"
+    cd "$MAALI_TOOL_NAME-fortran-$MAALI_TOOL_VERSION_FC"
+
+    maali_run "./configure --prefix=$MAALI_INSTALL_DIR --enable-shared"
+    maali_run "make"
+    maali_run "make install"
+  else
+    # all in one
+    cd "$MAALI_TOOL_BUILD_DIR"
+    maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE_EVAL"
+    maali_run "make"
+    maali_run "make install"
+  fi
+}
+
+##############################################################################

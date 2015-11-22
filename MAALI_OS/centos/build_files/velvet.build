@@ -1,0 +1,56 @@
+##############################################################################
+# $Id: velvet.cyg ,v 1.8 2013/12/03 08:26:43 stapops Exp $
+##############################################################################
+# maali config file for Velvet
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://www.ebi.ac.uk/~zerbino/velvet/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION".tgz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION".tgz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/"$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="bioperl/1.6.924"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_PERLLIB=1
+MAALI_MODULE_WHATIS="Velvet is a de novo genomic assembler specially designed for short read sequencing technologies, such as Solexa or 454"
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    sed -i -e 's/CC = gcc/CC = icc/g' Makefile
+  fi
+
+  maali_run "make"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin/"
+  maali_run "mv velvetg velveth contrib/shuffleSequences_fasta/shuffleSequences_fastq.pl contrib/shuffleSequences_fasta/shuffleSequences_fasta.pl $MAALI_INSTALL_DIR/bin/"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
+  maali_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOptimiser.pl $MAALI_INSTALL_DIR/bin/"
+  maali_run "mv contrib/VelvetOptimiser-2.2.4/VelvetOpt/ $MAALI_INSTALL_DIR/lib/perl5/site_perl/5.10.1/"
+  maali_run "make clean"
+  maali_run "make OPENMP=1"
+  maali_run "mv velvetg $MAALI_INSTALL_DIR/bin/velvetg_OMP"
+  maali_run "mv velveth $MAALI_INSTALL_DIR/bin/velveth_OMP"
+  maali_run "make clean"
+  maali_run "sed -i -e 's/31/99/g' Makefile"
+  maali_run "make OPENMP=1"
+  maali_run "mv velvetg $MAALI_INSTALL_DIR/bin/velvetg_max99_OMP"
+  maali_run "mv velveth $MAALI_INSTALL_DIR/bin/velveth_max99_OMP"
+
+}
+
+##############################################################################

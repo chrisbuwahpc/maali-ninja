@@ -1,0 +1,45 @@
+##############################################################################
+# $Id: python-boost.maali,v 1.8 2014/02/11 03:02:21 stapops Exp $
+##############################################################################
+# maali config file for Boost with Python
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_PYTHON"
+
+# needed  for this URL
+MAALI_BOOST_VERSION=`echo $MAALI_TOOL_VERSION| sed -e 's/\./_/g'`
+
+# tool name is python-boost
+MAALI_BOOST_NAME="boost"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/$MAALI_BOOST_NAME/files/$MAALI_BOOST_NAME/$MAALI_TOOL_VERSION/"$MAALI_BOOST_NAME"_"$MAALI_BOOST_VERSION".tar.bz2/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/"$MAALI_BOOST_NAME"_"$MAALI_BOOST_VERSION".tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/"$MAALI_BOOST_NAME"_"$MAALI_BOOST_VERSION
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1
+MAALI_MODULE_SET_C_INCLUDE_PATH=1
+MAALI_MODULE_SET_CPLUS_INCLUDE_PATH=1
+MAALI_MODULE_SET_SETENV='BOOST_ROOT=$MAALI_APP_HOME'
+MAALI_MODULE_WHATIS="Boost provides free peer-reviewed portable C++ source libraries."
+##############################################################################
+
+function maali_python_build {
+  # boost uses bjam
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  maali_run "./bootstrap.sh --with-libraries=date_time,filesystem,regex,system,thread,python,locale --prefix=$MAALI_INSTALL_DIR"
+  maali_run "./bjam"
+  maali_run "./bjam install --prefix=$MAALI_INSTALL_DIR --prefix=$MAALI_INSTALL_DIR/lib"
+}
+
+##############################################################################

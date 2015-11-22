@@ -1,0 +1,43 @@
+##############################################################################
+# $Id: bowtie.ibs,v 1.4 2013/12/03 08:26:43 stapops Exp $
+##############################################################################
+# ibs config file for bowtie
+##############################################################################
+
+# specify which compilers we want to build the tool with
+IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+IBS_URL="http://sourceforge.net/projects/bowtie-bio/files/bowtie/$IBS_TOOL_VERSION/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src.zip/download"
+#0.12.9
+
+# location we are downloading the source code to
+IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION-src.zip"
+
+# where the unpacked source code is located
+IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+IBS_TOOL_TYPE="bio-apps"
+
+# for auto-building module files
+IBS_MODULE_SET_PATH=1
+
+##############################################################################
+
+function ibs_build {
+  cd "$IBS_TOOL_BUILD_DIR"
+
+  if [ "$IBS_COMPILER_NAME" == "intel" ]; then
+    sed -i -e 's!gcc!icc!g' Makefile
+    sed -i -e 's!g++!icpc!g' Makefile
+    ibs_run "patch -p0 < $IBS_FILES_PATH/$IBS_TOOL_NAME.001.patch"
+  fi
+
+  ibs_run "make"
+  ibs_run "mkdir -p $IBS_INSTALL_DIR/bin"
+  ibs_run "mv bowtie bowtie-inspect bowtie-build $IBS_INSTALL_DIR/bin"
+
+}
+
+##############################################################################

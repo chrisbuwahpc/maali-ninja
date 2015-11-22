@@ -1,0 +1,71 @@
+###############################################################################
+# $Id: autodock.build,v 1.4 2013/12/11 08:13:28 stapops Exp $
+##############################################################################
+# maali config file for autodock
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://autodock.scripps.edu/downloads/previous-releases/autodock-registration/tars/dist423/autodocksuite-${MAALI_TOOL_VERSION}-src.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/autodocksuite-${MAALI_TOOL_VERSION}-src.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/src"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ=""
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ="$MAALI_DEFAULT_MPI"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=''
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="AutoDock is a suite of automated docking tools. It is designed to predict how small molecules, such as substrates or drug candidates, bind to a receptor of known 3D structure."
+##############################################################################
+
+function maali_build {
+
+  # There are two
+  # 1-> Build Autodock
+  # 2-> Build Autogrid which depends on Autodock
+  # PS autodock and autogrid has to be in the same directory
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  # Build autodock
+  cd "$MAALI_TOOL_BUILD_DIR"
+  cd autodock
+  ./configure --prefix=${MAALI_INSTALL_DIR}
+  make
+  make install
+	
+  # Build autogrid
+  cd "$MAALI_TOOL_BUILD_DIR"
+  cd autogrid
+  ./configure --prefix=${MAALI_INSTALL_DIR}
+  make
+  make install
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+  chmod -R 755 autodock
+  chmod -R 755 autogrid
+  cd autodock
+  make clean
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+  chmod -R 755 autodock
+  chmod -R 755 autogrid
+  cd autogrid
+  make clean
+}
+
+##############################################################################

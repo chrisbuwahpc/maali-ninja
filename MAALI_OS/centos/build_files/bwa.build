@@ -1,0 +1,44 @@
+##############################################################################
+# $Id: bwa.build,v 1.4 2014/05/27 04:35:15 stapops Exp $
+##############################################################################
+# maali config file for bfast
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/bio-bwa/files/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_WHATIS="Burrows-Wheeler Aligner BWA is a software package for mapping low-divergent sequences against a large reference genome, such as the human genome."
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+      sed -i -e 's/gcc/icc/g' Makefile
+      sed -i -e 's/g++/icpc/g' Makefile
+  fi
+
+  maali_run "make"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "mv bwa *.pl $MAALI_INSTALL_DIR/bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/share/man/man1"
+  maali_run "mv bwa.1 $MAALI_INSTALL_DIR/share/man/man1"
+}
+
+##############################################################################

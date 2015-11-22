@@ -1,0 +1,65 @@
+##############################################################################
+# maali config file for plink cray
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://pngu.mgh.harvard.edu/~purcell/plink/dist/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION-src.zip"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION-src.zip"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION-src"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites modules needed to install this new tool/package
+MAALI_TOOL_PREREQ="lapack/3.4.2 zlib/1.2.7"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=""
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_PATH=1
+MAALI_MODULE_WHATIS="PLINK is a whole genome association analysis toolset, designed to perfrom a range fo basic, large-scale analyses in a computationally efficient manner."
+
+##############################################################################
+
+function maali_build {
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+#  sed -i 's/CXX_UNIX = g++/CXX_UNIX = CC/g' Makefile
+#  sed -i 's/CXXFLAGS =/CXXFLAGS = -dynamic/g' Makefile
+  sed -i 's/WITH_LAPACK =/WITH_LAPACK = 1/g' Makefile
+  sed -i 's/LIB_LAPACK = \/usr\/lib\/liblapack.so.3/LIB_LAPACK = \$\(LAPACK)\/lib\/liblapack.so/g' Makefile
+  sed -i 's/FORCE_DYNAMIC =/FORCE_DYNAMIC = 1/g' Makefile
+  sed -i 's/LIB += -lz/LIB += -L\$\(MAALI_ZLIB_HOME)\/lib -lz/g' Makefile
+
+
+  sed -i '771s/iterator i/iterator i2/g' sets.cpp
+  sed -i '772s/i !=/i2 !=/g' sets.cpp
+  sed -i '774s/(\*i)/(\*i2)/g' sets.cpp
+  sed -i '775s/++i/++i2/g' sets.cpp
+
+
+  sed -i '1178s/iterator i/iterator i2/g' elf.cpp
+  sed -i '1179s/i !=/i2 !=/g' elf.cpp
+  sed -i '1181s/i->/i2->/g' elf.cpp
+  sed -i '1191s/++i/++i2/g' elf.cpp
+
+  sed -i '772s/ for (int j = 0 ; j < jointField.size(); j++ )/ for (int jj = 0 ; jj < jointField.size(); jj++ )/g' idhelp.cpp
+  sed -i '774s/\[j\]/\[jj\]/g' idhelp.cpp
+
+  maali_run "make"
+
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "install -m 755 plink $MAALI_INSTALL_DIR/bin/"
+}
+
+##############################################################################

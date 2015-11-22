@@ -1,0 +1,50 @@
+##############################################################################
+# $Id: mrbayes.build,v 1.2 2013/11/13 07:44:12 stapops Exp $
+##############################################################################
+# maali config file for Velvet
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/$MAALI_TOOL_NAME/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME"_"$MAALI_TOOL_VERSION/src"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="openmpi/1.7.5 beagle-lib/1.1"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  maali_run "autoconf"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR --enable-mpi=yes --with-beagle=$BEAGLE_LIB_DIR"
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    sed -i -e 's/-ffast-math/-xHost/g' Makefile
+  fi
+
+  maali_run "make"
+  mkdir -p $MAALI_INSTALL_DIR/bin
+
+#  maali_run "make install BINDIR=$MAALI_INSTALL_DIR/bin/"
+#  install target missing for 3.2.1
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "cp mb $MAALI_INSTALL_DIR/bin/."
+
+}
+
+##############################################################################

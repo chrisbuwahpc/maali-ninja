@@ -1,0 +1,48 @@
+##############################################################################
+# $Id: picard-tools.maali,v 1.1 2013/10/30 06:46:33 stapops Exp $
+##############################################################################
+# maali config file for GenomeAnalysisTK
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from - need to register
+MAALI_URL="http://github.com/broadinstitute/picard/releases/download/$MAALI_TOOL_VERSION/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.zip"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.zip"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="java/8u40"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="A set of tools (in Java) for working with next generation sequencing data in the BAM (http://samtools.sourceforge.net) format."
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  mkdir -p "$MAALI_INSTALL_DIR/jar"
+  mkdir -p "$MAALI_INSTALL_DIR/bin"
+  for jar in *.jar
+  do
+    toolname=$(echo "$jar" | cut -d '.' -f 1 | cut -d '-' -f 1 | tr '[:upper:]' '[:lower:]')
+    cat <<EOF >"$MAALI_INSTALL_DIR/bin/$toolname"
+#!/bin/bash
+
+java -Xmx4g -jar \$MAALI_PICARDTOOLS_HOME/jar/$jar \$*
+EOF
+    maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/$toolname"
+    maali_run "install -m 644 $jar $MAALI_INSTALL_DIR/jar"
+  done
+}
+
+##############################################################################

@@ -1,0 +1,52 @@
+##############################################################################
+# $Id: hdf5.maali,v 1.9 2013/10/24 02:53:36 stapops Exp $
+##############################################################################
+# maali config file for hdf5
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://www.hdfgroup.org/ftp/HDF5/releases/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION/src/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="zlib/1.2.7 szip/2.1"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--with-zlib=$MAALI_ZLIB_HOME --with-szlib=$MAALI_SZIP_HOME --enable-fortran --enable-cxx --enable-production --with-default-api-version=v16'
+
+# for auto-building module files
+
+MAALI_MODULE_SET_SETENV="HDF5_DIR=$MAALI_INSTALL_DIR"
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1 
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_WHATIS="HDF5 is a data model, library, and file format for storing and managing data. "
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+  
+  MAALI_TOOL_CONFIGURE_EVAL=`eval echo "$MAALI_TOOL_CONFIGURE"`
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE_EVAL"
+  maali_run "make -j $MAALI_CORES" 
+  maali_run "make test"
+  maali_run "make install"
+}
+
+##############################################################################

@@ -1,0 +1,54 @@
+##############################################################################
+# $Id: picard.ibs,v 1.129 2015/02/25 02:18:06 mshaikh Exp $
+##############################################################################
+# maali config file for Apache-Ant
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+#Eventhough the build does not use any of the three compilers it will set all the required environment variables in all
+#the Programing Environments. 
+
+# URL to download the source code from
+MAALI_URL="https://github.com/broadinstitute/$MAALI_TOOL_NAME/archive/$MAALI_TOOL_VERSION.tar.gz"
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites 
+MAALI_TOOL_PREREQ="apache-ant java"
+
+## These are boolean options set to 1 to add to module
+MAALI_MODULE_SET_SETENV='PICARD_LIB=$MAALI_INSTALL_DIR/dist'
+# Description of what the package/tool is.
+MAALI_MODULE_WHATIS="A set of tools (in Java) for working with next generation sequencing data in the BAM (http://samtools.sourcef
+orge.net) format."
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+  mv ${MAALI_TOOL_BUILD_DIR}/* ${MAALI_INSTALL_DIR}
+  cd "$MAALI_INSTALL_DIR"
+  ls -l
+  echo "Downloading a htsjdk in $MAALI_INSTALL_DIR/lib/optional"
+  wget https://github.com/samtools/htsjdk/tarball/master/samtools-htsjdk-1.138-21-g0d13a6c.tar.gz
+  echo "Extracting htsjdk"
+  tar xvf samtools-htsjdk-1.138-21-g0d13a6c.tar.gz
+  cd samtools-htsjdk-0d13a6c
+  echo "Building htsjdk.jar"
+  maali_run "ant htsjdk-jar"
+  cd ..
+  mv samtools-htsjdk-0d13a6c htsjdk 
+  rm master
+  cd "$MAALI_INSTALL_DIR"
+  echo "Now building picard"
+  maali_run "ant -lib lib/ant package-commands"
+}
+
+##############################################################################

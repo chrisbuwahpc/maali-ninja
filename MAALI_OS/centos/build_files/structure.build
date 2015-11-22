@@ -1,0 +1,43 @@
+##############################################################################
+# $Id: structure.cyg ,v 1.3 2013/11/01 06:45:03 stapops Exp $
+##############################################################################
+# maali config file for structure
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://pritch.bsd.uchicago.edu/structure_software/release_versions/v${MAALI_TOOL_VERSION}/structure_kernel_source.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/structure_kernel_src"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="apps"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=''
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_build {
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "make"
+
+  mkdir -p $MAALI_INSTALL_DIR/bin
+  chmod 755 $MAALI_INSTALL_DIR
+  chmod 755 $MAALI_INSTALL_DIR/bin
+  cp * $MAALI_INSTALL_DIR/bin
+  chmod 755 $MAALI_INSTALL_DIR/bin/structure
+  make clean
+}
+
+##############################################################################

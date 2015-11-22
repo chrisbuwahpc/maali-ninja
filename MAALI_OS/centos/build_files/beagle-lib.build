@@ -1,0 +1,58 @@
+##############################################################################
+# $Id: beagle-lib.build,v 1.4 2013/11/13 07:44:12 stapops Exp $
+##############################################################################
+# maali config file for beagle-lib
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# needed for URL
+MAALI_TOOL_VERSION_BEAGLE=`echo $MAALI_TOOL_VERSION | sed -e 's/\./_/g'`
+
+# URL to download the source code from
+MAALI_URL="https://github.com/beagle-dev/beagle-lib.git"
+
+# where the unpacked source code is located 
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/beagle-lib"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="java/8u40"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_SETENV='BEAGLE_LIB_DIR=${MAALI_INSTALL_DIR}'
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_WHATIS="general purpose library for evaluating the likelihood of sequence evolution on trees"
+##############################################################################
+
+function maali_download {
+  maali_wiki ".. supressing downloading as beagle-lib has no downloads"
+}
+
+##############################################################################
+
+function maali_unpack {
+  maali_wiki ".. supressing unpacking as beagle-lib has no downloads"
+}
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_BUILD_DIR"
+
+  # need to clone from git
+  maali_run "git clone $MAALI_URL"
+  
+  cd $MAALI_TOOL_BUILD_DIR
+  maali_run "./autogen.sh"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR"
+  maali_run "make"
+  maali_run "make install"
+}
+
+##############################################################################

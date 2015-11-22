@@ -1,0 +1,47 @@
+##############################################################################
+# $Id: bamstats.build,v 1.1 2014/02/27 08:29:14 stapops Exp $
+##############################################################################
+# maali config file for BAMStats
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from - need to register
+#http://sourceforge.net/projects/bamstats/files/BAMStats-1.25.zip/download
+MAALI_URL="http://sourceforge.net/projects/$MAALI_TOOL_NAME/files/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.zip/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.zip"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="java/8u40"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="BAMStats, is a simple software tool built on the Picard Java API, which  can calculate and graphically display various metrics derived from SAM/BAM files of value in QC assessments."
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  mkdir -p "$MAALI_INSTALL_DIR/jar"
+  mkdir -p "$MAALI_INSTALL_DIR/bin"
+
+  cat <<EOF >"$MAALI_INSTALL_DIR/bin/bamstats"
+#!/bin/bash
+
+java -Xmx8g -jar \$MAALI_BAMSTATS_HOME/jar/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.jar \$*
+EOF
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/bamstats"
+  maali_run "install -m 644 $MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.jar $MAALI_INSTALL_DIR/jar"
+}
+
+##############################################################################

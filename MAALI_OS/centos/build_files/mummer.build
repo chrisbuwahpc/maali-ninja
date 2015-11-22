@@ -1,0 +1,55 @@
+##############################################################################
+# $Id: mummer.build,v 1.4 2013/11/21 09:08:57 stapops Exp $
+##############################################################################
+# maali config file for mummer
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://sourceforge.net/projects/mummer/files/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/MUMmer$MAALI_TOOL_VERSION.tar.gz/download"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/MUMmer$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/MUMmer$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# for auto-building module files
+MAALI_MODULE_PATH=1
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    sed -i -e 's/g++/icpc/g' Makefile
+    sed -i -e 's/gcc/icc/g' Makefile
+  fi
+
+  sed -i -e 's!BIN_DIR     := $(TOP_DIR)!BIN_DIR     := '$MAALI_INSTALL_DIR'/bin!g' Makefile
+  sed -i -e 's!AUX_BIN_DIR := $(TOP_DIR)/aux_bin!AUX_BIN_DIR := '$MAALI_INSTALL_DIR'/aux_bin!g' Makefile
+
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/aux_bin"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/scripts"
+
+  maali_run "make"
+
+  # fix the scripts
+  maali_run "cp scripts/Foundation.pm $MAALI_INSTALL_DIR/scripts"
+  maali_run "chmod 644 $MAALI_INSTALL_DIR/scripts/Foundation.pm"
+  
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/dnadiff
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/mapview
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/mummerplot
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/nucmer
+  sed -i -e "s!$MAALI_TOOL_BUILD_DIR/scripts!$MAALI_INSTALL_DIR/scripts!g" $MAALI_INSTALL_DIR/bin/promer
+}
+
+##############################################################################

@@ -1,0 +1,69 @@
+##############################################################################
+# $Id: numpy.maali,v 1.13 2014/02/10 08:04:25 stapops Exp $
+##############################################################################
+# maali config file for NumPy
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_PYTHON"
+
+# URL to download the source code from
+MAALI_URL="http://pypi.python.org/packages/source/$MAALI_PYTHON_FIRSTLETTER/$MAALI_TOOL_NAME_ORIG/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ=" "
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+
+##############################################################################
+
+function maali_python_build {
+
+# change to build directory
+cd $MAALI_TOOL_BUILD_DIR
+
+# test for mkl else default is blas from lapack and lapack itself
+# use mkl for performance (Current Intel compilers are different)
+if [[ -z $MKL_HOME ]]; then 
+cat <<EOF >site.cfg
+[mkl]
+library_dirs = $MKL_HOME/lib/intel64
+include_dirs = $MKL_HOME/include
+mkl_libs = mkl_def, mkl_intel_lp64, mkl_gnu_thread, mkl_core, mkl_mc
+lapack_libs = mkl_lapack95_lp64
+EOF
+
+export LDFLAGS='-lgomp'
+
+else # default to atlas install via package managment tool
+cat <<EOF >site.cfg
+[DEFAULT]
+library_dirs = /usr/lib
+include_dirs = /usr/include
+libraries = gfortran, gfortranbegin
+#[blas_opt]
+#libraries = f77blas, cblas, atlas
+#[lapack_opt]
+#libraries = lapack_atlas, f77blas, cblas, atlas
+#language = gfortran
+EOF
+#export BLAS=/nectar/ubuntu14/devel/gnu/4.8.4/lapack/3.4.2/lib/libblas.so
+#export LAPACK=/nectar/ubuntu14/devel/gnu/4.8.4/lapack/3.4.2/lib/liblapack.so
+###export LDFLAGS='-lgomp'
+
+fi
+
+
+maali_run "python setup.py config"
+maali_run "python setup.py build"
+maali_run "python setup.py install --prefix=$IBS_INSTALL_DIR"
+}
+
+##############################################################################

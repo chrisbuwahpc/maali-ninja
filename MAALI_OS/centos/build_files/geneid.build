@@ -1,0 +1,45 @@
+##############################################################################
+# $Id: geneid.build,v 1.2 2013/10/30 08:15:51 stapops Exp $
+##############################################################################
+# build config file for geneid
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="ftp://genome.crg.es/pub/software/$MAALI_TOOL_NAME/"$MAALI_TOOL_NAME"_v"$MAALI_TOOL_VERSION".Jan_13_2011.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/"$MAALI_TOOL_NAME"_v"$MAALI_TOOL_VERSION".Jan_13_2011.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# for auto-maaliing module files
+MAALI_MODULE_SET_SETENV='GENEID_PARAM_DIR=${MAALI_INSTALL_DIR}/param'
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="geneid is a program to predict genes along a DNA sequence in a large set of organisms."
+
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    sed -i -e 's/CC=gcc/CC=icc/g' Makefile
+  fi
+
+  maali_run "make"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/bin/"
+  maali_run "mv bin/geneid $MAALI_INSTALL_DIR/bin/"
+  maali_run "mkdir -p $MAALI_INSTALL_DIR/param"
+  maali_run "rsync -a param/*.param $MAALI_INSTALL_DIR/param"
+
+}
+
+##############################################################################
+

@@ -1,0 +1,63 @@
+##############################################################################
+# $Id: fastqc.build,v 1.2 2013/11/01 01:28:39 stapops Exp $
+##############################################################################
+# MAALI config file for FastQC
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://www.bioinformatics.babraham.ac.uk/projects/fastqc/"$MAALI_TOOL_NAME"_v$MAALI_TOOL_VERSION.zip"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/"$MAALI_TOOL_NAME"_v$MAALI_TOOL_VERSION.zip"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/FastQC"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ="java/8u40"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="FastQC aims to provide a simple way to do some quality control checks on raw sequence data coming from high throughput sequencing pipelines."
+
+
+##############################################################################
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "mkdir -p  $MAALI_INSTALL_DIR/bin"
+  maali_run "mv * $MAALI_INSTALL_DIR/bin"
+  maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/fastqc"
+}
+
+##############################################################################
+
+#function MAALI_module {
+
+#cat <<EOF >$MAALI_TOOL_MODULE
+#%Module######################################################################
+#
+# $MAALI_TOOL modulefile
+#
+#proc ModulesHelp { } {
+#  puts stderr "Sets up the paths you need to use $MAALI_TOOL version $version"
+#}
+#set sys     [uname sysname]
+#set version $MAALI_TOOL_VERSION
+#set tool    $MAALI_TOOL_NAME
+#if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+#  module unload \$tool
+#}
+
+#module load java/1.6.0_38
+
+#prepend-path PATH $MAALI_INSTALL_DIR
+#EOF
+#}
+
+##############################################################################

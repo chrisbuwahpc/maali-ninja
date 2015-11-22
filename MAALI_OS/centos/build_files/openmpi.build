@@ -1,0 +1,71 @@
+##############################################################################
+# $Id: openmpi.zythos.maali,v 1.1 2013/09/30 01:37:06 stapops Exp $
+##############################################################################
+# maali config file for Open MPI
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# need to sub the major/minor version
+MAALI_TOOL_MAJOR_MINOR_VERSION=`echo "$MAALI_TOOL_VERSION" | cut -d '.' -f 1,2`
+
+# URL to download the source code from
+MAALI_URL="http://www.open-mpi.org/software/ompi/v$MAALI_TOOL_MAJOR_MINOR_VERSION/downloads/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.bz2"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+##############################################################################
+
+function maali_module {
+
+cat <<EOF >$MAALI_TOOL_MODULE
+#%Module######################################################################
+#
+# $MAALI_TOOL modulefile
+#
+proc ModulesHelp { } {
+  puts stderr "Sets up the paths you need to use $MAALI_TOOL version $version"
+}
+set sys     [uname sysname]
+set version $MAALI_TOOL_VERSION
+set tool    $MAALI_TOOL_NAME
+if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+  module unload \$tool
+}
+
+# need to check the compiler is defined
+
+setenv CC mpicc
+setenv CXX mpic++
+setenv F77 mpif77
+setenv F90 mpif90
+setenv FC mpif90
+
+setenv MPICC mpicc
+setenv MPICXX mpic++
+setenv MPIF90 mpif90
+
+prepend-path PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/bin
+prepend-path PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/sbin
+prepend-path LD_LIBRARY_PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/lib
+prepend-path LIBRARY_PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/lib
+prepend-path MANPATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/share/man
+prepend-path CPATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/include
+prepend-path FPATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/include
+prepend-path FCPATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/include
+#prepend-path INTEL_INC_PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/include
+setenv MPI_ARCH_PATH $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION
+#setenv OPAL_PREFIX $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION
+setenv MPI_HOME $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION
+EOF
+}
+
+##############################################################################

@@ -1,0 +1,57 @@
+##############################################################################
+# $Id: tophat.cyg,v 1.3 2013/11/08 05:13:28 stapops Exp $
+##############################################################################
+# maali config file for tophat
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# intel/12.1 fails on
+# ./SeqAn-1.2/seqan/platform/platform_gcc.h(42): error: invalid combination of type specifiers
+#  typedef int64_t __int64;
+
+# URL to download the source code from
+MAALI_URL="https://ccb.jhu.edu/software/$MAALI_TOOL_NAME/downloads/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="bio-apps"
+
+# tool pre-requisites
+MAALI_TOOL_PREREQ=""
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--with-bam=$BAM_ROOT --with-boost-libdir=${BOOST_ROOT}/lib'
+
+# tool build pre-requisites - not added to the module, only needed for building (loaded after MAALI_TOOL_PREREQ)
+MAALI_TOOL_BUILD_PREREQ="samtools/1.2 python/2.7.9 python-boost/1.55.0"
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_WHATIS="TopHat is a fast splice junction mapper for RNA-Seq reads."
+##############################################################################
+
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR"
+
+#  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+#    sed -i -e 's!$(GCC_PREFIX)/gcc$(GCC_SUFFIX)!icc!g' Makefile
+#    sed -i -e 's!$(GCC_PREFIX)/g++$(GCC_SUFFIX)!icpc!g' Makefile
+#    maali_run "patch -p0 < $MAALI_FILES_PATH/$MAALI_TOOL_NAME.001.patch"
+#  fi
+#
+
+  export LIBS="-lpthread"
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE_EVAL"
+  maali_run "make"
+  maali_run "make install"
+
+}
+
+##############################################################################
