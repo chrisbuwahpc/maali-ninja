@@ -9,6 +9,11 @@ MAALI_TOOL_COMPILERS="binary"
 
 # URL to download the source code from - it's java
 MAALI_URL=""
+# note java is downloaded at 
+# http://www.oracle.com/technetwork/java/javase/downloads"
+# you want the jdk download jdk-****-linux-x64.tar.gz and 
+# copy it to the MAALI_SRC directory which is defined in the $MAALI_SYSTEM.config 
+# that is in ~/.maali
 
 #Older Style java ie version number is 1.7.0_65
 MAALI_JAVA_MAJOR_VERSION=`echo $MAALI_TOOL_VERSION | cut -d '.' -f 2`
@@ -54,7 +59,8 @@ function maali_build {
   cd ..
   rmdir $MAALI_INSTALL_DIR
   tar zxf $MAALI_DST
-  mv jdk$MAALI_TOOL_VERSION $MAALI_INSTALL_DIR
+  maali_run "echo $MAALI_INSTALL_DIR"
+  #mv jdk$MAALI_TOOL_VERSION $MAALI_INSTALL_DIR
   #Hmmm 7/8 unpacks like "jdk1.8.0_40" jdk1.{$MAALI_JAVA_MAJOR_VERSION}.0_{$MAALI_JAVA_MAJOR_VERSION}
   echo jdk1.${MAALI_JAVA_MAJOR_VERSION}.0_${MAALI_JAVA_UPDATE_VERSION} >> /tmp/variable-test
   mv jdk1.${MAALI_JAVA_MAJOR_VERSION}.0_${MAALI_JAVA_UPDATE_VERSION} $MAALI_INSTALL_DIR

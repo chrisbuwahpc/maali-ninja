@@ -38,7 +38,7 @@ function maali_build {
     cat <<EOF >"$MAALI_INSTALL_DIR/bin/$toolname"
 #!/bin/bash
 
-java -Xmx1g -jar \$MAALI_PICARDTOOLS_HOME/jar/$jar \$*
+java -Xmx4g -jar \$MAALI_PICARDTOOLS_HOME/jar/$jar \$*
 EOF
     maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/$toolname"
     maali_run "install -m 644 $jar $MAALI_INSTALL_DIR/jar"

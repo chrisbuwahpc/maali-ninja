@@ -1,43 +1,43 @@
 ##############################################################################
 # $Id: beast.build,v 1.5 2013/12/18 04:09:03 stapops Exp $
 ##############################################################################
-# ibs config file for Beast
+# maali config file for Beast
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
 
-IBS_TOOL_VERSION_MAJOR=`echo "$IBS_TOOL_VERSION" | cut -d '.' -f 1`
+MAALI_TOOL_VERSION_MAJOR=`echo "$MAALI_TOOL_VERSION" | cut -d '.' -f 1`
 
-if [ $IBS_TOOL_VERSION_MAJOR -ge 2 ]; then 
+if [ $MAALI_TOOL_VERSION_MAJOR -ge 2 ]; then 
   # URL to download the source code from
-  IBS_URL="http://beast2.googlecode.com/files/BEAST%20v$IBS_TOOL_VERSION.tgz"
+  MAALI_URL="https://github.com/CompEvol/beast2/releases/download/v${MAALI_TOOL_VERSION}/${MAALI_TOOL_NAME_ORIG}.v${MAALI_TOOL_VERSION}.Linux.tgz"
 
   # location we are downloading the source code to
-  IBS_DST="$IBS_SRC/BEAST%20v$IBS_TOOL_VERSION.tgz"
+  MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME.v$MAALI_TOOL_VERSION.Linux.tgz"
 
   # where the unpacked source code is located
-  IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/BEAST"
+  MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/BEAST"
 else
   # URL to download the source code from
-  IBS_URL="http://beast-mcmc.googlecode.com/files/BEASTv$IBS_TOOL_VERSION.tgz"
+  MAALI_URL="http://beast-mcmc.googlecode.com/files/v$MAALI_TOOL_VERSION.tgz"
 
   # location we are downloading the source code to
-  IBS_DST="$IBS_SRC/BEASTv$IBS_TOOL_VERSION.tgz"
+  MAALI_DST="$MAALI_SRC/BEASTv$MAALI_TOOL_VERSION.tgz"
 
   # where the unpacked source code is located
-  IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/BEASTv$IBS_TOOL_VERSION"
+  MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/BEASTv$MAALI_TOOL_VERSION"
 fi
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ="java/8u40  beagle-lib/1.1"
+MAALI_TOOL_PREREQ="java/8u40  beagle-lib/2.1"
 
 # for auto-building module files
-MAALI_MODULE_SET_SETENV="BEAST_DIR=${MAALI_INSTALL_DIR}"
-MAALI_MODULE_SET_SETENV="BEAST_LIB=${MAALI_INSTALL_DIR}/lib"
+
+MAALI_MODULE_SET_SETENV='BEAST_DIR=$MAALI_INSTALL_DIR BEAST_LIB=$MAALI_INSTALL_DIR/lib'
 MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_SET_LD_LIBRARY_PATH=1
 MAALI_MODULE_WHATIS="Bayesian evolutionary analysis by sampling trees-(BEAST)2 is a cross-platform program for Bayesian phylogenetic analysis of molecular sequences."
@@ -88,38 +88,6 @@ EOF
 
   maali_run "chmod 755 $MAALI_INSTALL_DIR/bin/beast"
 
-}
-
-##############################################################################
-
-function ibs_module {
-
-cat <<EOF >$IBS_TOOL_MODULE
-#%Module######################################################################
-#
-# $IBS_TOOL modulefile
-#
-proc ModulesHelp { } {
-  puts stderr "Sets up the paths you need to use $IBS_TOOL version $version"
-}
-set sys     [uname sysname]
-set version $IBS_TOOL_VERSION
-set tool    $IBS_TOOL_NAME
-if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
-  module unload \$tool
-}
-
-# need to check the compiler is defined
-
-module load java/1.6.0_38
-module load beagle-lib/1.1
-
-setenv       BEAST_DIR       $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION
-setenv       BEAST_LIB       $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/lib
-
-prepend-path PATH            $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/bin
-prepend-path LD_LIBRARY_PATH $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/lib
-EOF
 }
 
 ##############################################################################

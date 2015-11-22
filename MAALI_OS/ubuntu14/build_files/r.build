@@ -1,4 +1,4 @@
-##############################################################################
+r##############################################################################
 # $Id: r.maali,v 1.1 2014/07/23 06:23:35 stapops Exp $
 ##############################################################################
 # maali config file for R
@@ -17,7 +17,7 @@ MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME_ORIG-$MAALI_TOOL_VERSION.tar.gz"
 MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/R-$MAALI_TOOL_VERSION"
 
 # add additional configure options
-MAALI_TOOL_CONFIGURE="LDFLAGS=-dynamic --enable-R-shlib"
+MAALI_TOOL_CONFIGURE="--enable-R-shlib --enable-R-profiling --enable-memory-profile --with-blas --with-lapack --with-x"
 
 # for auto-building module files
 MAALI_MODULE_SET_PATH=1

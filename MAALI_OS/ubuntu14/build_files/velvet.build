@@ -1,5 +1,5 @@
 ##############################################################################
-# $Id: velvet.ibs,v 1.8 2013/12/03 08:26:43 stapops Exp $
+# $Id: velvet.cyg ,v 1.8 2013/12/03 08:26:43 stapops Exp $
 ##############################################################################
 # maali config file for Velvet
 ##############################################################################
@@ -25,7 +25,7 @@ MAALI_TOOL_PREREQ="bioperl/1.6.924"
 # for auto-building module files
 MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_SET_PERLLIB=1
-MAALI_MODULE_WHATIS=""
+MAALI_MODULE_WHATIS="Velvet is a de novo genomic assembler specially designed for short read sequencing technologies, such as Solexa or 454"
 ##############################################################################
 
 function maali_build {

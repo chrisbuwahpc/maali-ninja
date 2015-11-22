@@ -1,59 +1,76 @@
 ##############################################################################
-# $Id: ncbi-blast.ibs,v 1.3 2013/11/01 01:28:39 stapops Exp $
+# $Id: ncbi-blast.cyg ,v 1.3 2013/11/01 01:28:39 stapops Exp $
 ##############################################################################
-# ibs config file for ncbi-blast
+# maali config file for ncbi-blast
 ##############################################################################
 
 # specify which compilers we want to build the tool with
-IBS_TOOL_COMPILERS="$IBS_DEFAULT_GCC_COMPILERS"
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
 
 # URL to download the source code from
-IBS_URL="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/$IBS_TOOL_NAME-$IBS_TOOL_VERSION+-src.tar.gz"
+MAALI_URL="ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION+-src.tar.gz"
 
 # location we are downloading the source code to
-IBS_DST="$IBS_SRC/$IBS_TOOL_NAME-$IBS_TOOL_VERSION+-src.tar.gz"
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION+-src.tar.gz"
 
 # where the unpacked source code is located
-IBS_TOOL_BUILD_DIR="$IBS_BUILD_DIR/$IBS_TOOL_NAME-$IBS_TOOL_VERSION+-src"
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION+-src"
 
 # type of tool (eg. apps, devel, python, etc.)
-IBS_TOOL_TYPE="bio-apps"
+MAALI_TOOL_TYPE="bio-apps"
 
 # tool pre-requisites
-IBS_TOOL_PREREQ=""
+MAALI_TOOL_PREREQ=""
 
-function ibs_build {
-  cd "$IBS_TOOL_BUILD_DIR/c++"
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--with-mt --without-debug'
 
-  ibs_run "./configure --with-mt --prefix=$IBS_INSTALL_DIR --without-debug"
-  ibs_run "make"
-  ibs_run "make install"
+
+# for auto-building module files
+
+MAALI_MODULE_SET_SETENV='BLASTMAT=${MAALI_INSTALL_DIR}/data' 
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_CPATH=1 
+MAALI_MODULE_SET_FPATH=1
+MAALI_MODULE_SET_FCPATH=1
+MAALI_MODULE_SET_MANPATH=1
+MAALI_MODULE_SET_PKG_CONFIG_PATH=1
+MAALI_MODULE_WHATIS="The Basic Local Alignment Search Tool (BLAST) finds regions of local similarity between sequences. The program compares nucleotide or protein sequences to sequence databases and calculates the statistical significance of matches. BLAST can be used to infer functional and evolutionary relationships between sequences as well as help identify members of gene families."
+
+##############################################################################
+function maali_build {
+  cd "$MAALI_TOOL_BUILD_DIR/c++"
+
+  maali_run "./configure --with-mt --prefix=$MAALI_INSTALL_DIR --without-debug"
+  maali_run "make"
+  maali_run "make install"
 }
 
 ##############################################################################
 
-function ibs_module {
+function maali_module {
 
-cat <<EOF >$IBS_TOOL_MODULE
+cat <<EOF >$MAALI_TOOL_MODULE
 #%Module######################################################################
 #
-# $IBS_TOOL modulefile
+# $MAALI_TOOL modulefile
 #
 proc ModulesHelp { } {
-  puts stderr "Sets up the paths you need to use $IBS_TOOL version $version"
+  puts stderr "Sets up the paths you need to use $MAALI_TOOL version $version"
 }
 set sys     [uname sysname]
-set version $IBS_TOOL_VERSION
-set tool    $IBS_TOOL_NAME
+set version $MAALI_TOOL_VERSION
+set tool    $MAALI_TOOL_NAME
 if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
   module unload \$tool
 }
 
 # need to check the compiler is defined
 
-prepend-path PATH     $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/bin
+prepend-path PATH     $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/bin
 setenv       BLASTDB  /group/data/blast
-setenv       BLASTMAT $IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION/data
+setenv       BLASTMAT $MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION/data
 EOF
 }
 
