@@ -1,7 +1,7 @@
 ##############################################################################
-# $Id: silo.build,v 1.9 2014/05/14 09:23:15 stapops Exp $
+# $Id: su.build,v 1.9 2014/05/14 09:23:15 stapops Exp $
 ##############################################################################
-# maali config file for cwp_s
+# maali config file for cwp_su
 ##############################################################################
 
 # specify which compilers we want to build the tool with
@@ -14,7 +14,8 @@ MAALI_URL="ftp://ftp.cwp.mines.edu/pub/cwpcodes/cwp_${MAALI_TOOL_NAME}_all_${MAA
 MAALI_DST="$MAALI_SRC/cwp_${MAALI_TOOL_NAME}_${MAALI_TOOL_VERSION}.tar.gz"
 
 # where the unpacked source code is located
-MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME_$MAALI_TOOL_VERSION"
+MAALI_TOOL_BUILD_DIR=" "
+#$MAALI_BUILD_DIR/cwp_${MAALI_TOOL_NAME}_${MAALI_TOOL_VERSION}"
 
 # type of tool (eg. apps, devel, python, etc.)
 MAALI_TOOL_TYPE="apps"
@@ -30,10 +31,16 @@ MAALI_MODULE_SET_LD_LIBRARY_PATH=1
 ##############################################################################
 
 function maali_build {
-    cd "$MAALI_TOOL_BUILD_DIR"
-    MAALI_TOOL_CONFIGURE_EVAL=`eval echo "$MAALI_TOOL_CONFIGURE_NOHDF5"`
-    CWPROOT=${MAALI_INSTALL_DIR}
-    cp $CWPROOT/src/configs/Makefile.config_linux $CWPROOT/src/Makefile.config
+    MAALI_TOOL_BUILD_DIR="${MAALI_BUILD_DIR}/cwp_su"
+    maali_run "mkdir -p ${MAALI_TOOL_BUILD_DIR}
+    cp $MAALI_DST $MAALI_TOOL_BUILD_DIR/."
+    cd $MAALI_TOOL_BUILD_DIR
+    tar -zxf cwp_${MAALI_TOOL_NAME}_${MAALI_TOOL_VERSION}.tar.gz
+    cd src 
+    echo install is ${MAALI_INSTALL_DIR}
+
+    export CWPROOT=${MAALI_TOOL_BUILD_DIR}
+    cp ${CWPROOT}/src/configs/Makefile.config_Linux_x86_64 ${CWPROOT}/src/Makefile.config
     maali_run "make install"
     maali_run "make xtinstall"
     maali_run "make xminstall"
