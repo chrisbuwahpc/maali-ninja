@@ -23,11 +23,10 @@ MAALI_TOOL_TYPE="apps"
 # tool pre-requisites
 MAALI_TOOL_PREREQ=" "
 
-# for auto-building module files
-MAALI_MODULE_SET_SETENV="CWPROOT=$MAALI_INSTALL_DIR"
+# for auto-building module file
 MAALI_MODULE_SET_PATH=1
 MAALI_MODULE_SET_LD_LIBRARY_PATH=1
-
+MAALI_MODULE_SET_SETENV='CWPROOT=${MAALI_INSTALL_DIR}'
 ##############################################################################
 
 function maali_build {
@@ -46,8 +45,13 @@ function maali_build {
     maali_run "make xminstall"
     maali_run "make utils"
     maali_run "make finstall"
-    maali_run "make clean"
+#    maali_run "make clean"
 
+    cd ..
+    ls  
+    cp -r bin ${MAALI_INSTALL_DIR}
+    cp -r lib ${MAALI_INSTALL_DIR}
+    cp -r include ${MAALI_INSTALL_DIR}
 }
 
 ##############################################################################
