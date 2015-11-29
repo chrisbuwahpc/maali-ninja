@@ -1,0 +1,53 @@
+##############################################################################
+# maali config file for Qt
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://download.qt.io/official_releases/$MAALI_TOOL_NAME/$MAALI_TOOL_MAJOR_MINOR_VERSION/$MAALI_TOOL_VERSION/single/$MAALI_TOOL_NAME-everywhere-opensource-src-$MAALI_TOOL_VERSION.tar.xz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-everywhere-opensource-src-$MAALI_TOOL_VERSION.tar.xz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-everywhere-opensource-src-$MAALI_TOOL_VERSION/"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="devel"
+
+# tool pre-requisites 
+MAALI_TOOL_PREREQ=""
+
+# add additional configure options
+if [[ $MAALI_TOOL_MAJOR_VERSION -lt 5 ]]; then
+MAALI_TOOL_CONFIGURE="-v -confirm-license -stl -opensource -release -shared -system-zlib -system-libtiff -system -libpng -system-libjpeg -opengl -webkit"
+else
+MAALI_TOOL_CONFIGURE="-confirm-license -opensource -release -shared -system-zlib -system-libpng -system-libjpeg -opengl -verbose"
+fi
+
+# for auto-building module fils
+
+## These are boolean options set to 1 to add to module
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_SETENV='Qt_ROOT=$MAALI_INSTALL_DIR'
+
+# Description of what the package/tool is.
+MAALI_MODULE_WHATIS="QT is a cross-platform application framework tool."
+
+##############################################################################
+
+function maali_build {
+
+  if [ "$MAALI_COMPILER_NAME" == "intel" ]; then
+    MAALI_TOOL_CONFIGURE="-platform linux-icc-64 -no-javascript-jit $MAALI_TOOL_CONFIGURE"
+  fi
+ 
+  cd "$MAALI_TOOL_BUILD_DIR"
+  maali_run "./configure -prefix $MAALI_INSTALL_DIR $MAALI_TOOL_CONFIGURE"
+  maali_run "make -j$MAALI_CORES"
+  maali_run "make install"
+}
+

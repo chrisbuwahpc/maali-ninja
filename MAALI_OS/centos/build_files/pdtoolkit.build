@@ -1,0 +1,79 @@
+##############################################################################
+# $Id: pdtoolkit.ibs,v 1.6 2013/11/01 08:15:35 stapops Exp $
+##############################################################################
+# maali config file for pdtoolkit
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://cs.uoregon.edu/Research/tau/pdt_releases/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION/"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="tools"
+
+# tool pre-requisites 
+MAALI_TOOL_PREREQ=""
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE=""
+
+# defined environment variable of the basic path  
+MAALI_MODULE_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_SET_SETENV='PDT_HOME=$MAALI_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$MAALI_TOOL_NAME/$MAALI_TOOL_VERSION'
+MAALI_MODULE_WHATIS='Program Database Toolkit (PDT) is a framework for analyzing source code written in several pro
+gramming languages and for making rich program knowledge accessible to developers of static and dynamic analys
+is tools.'
+
+
+##############################################################################
+
+function maali_build {
+  # pdtoolkit uses gmake to compile
+
+  cd "$MAALI_TOOL_BUILD_DIR"
+	
+  maali_run "./configure --prefix=$MAALI_INSTALL_DIR"
+  maali_run "make -j$MAALI_CORES install"
+
+  maali_run "rsync -av x86_64/ $MAALI_INSTALL_DIR/x86_64/"
+  maali_run "rsync -av include/ $MAALI_INSTALL_DIR/include/"
+}
+
+##############################################################################
+
+#function ibs_module {
+
+#cat <<EOF >$IBS_TOOL_MODULE
+#%Module######################################################################
+#
+# $IBS_TOOL modulefile
+#
+#proc ModulesHelp { } {
+#  puts stderr "Sets up the paths you need to use $IBS_TOOL version $version"
+#}
+#set sys     [uname sysname]
+#set version $IBS_TOOL_VERSION
+#set tool    $IBS_TOOL_NAME
+#if { [is-loaded \$tool] && ! [is-loaded \$tool/\$version] } {
+#  module unload \$tool
+#}
+#module-whatis	Program Database Toolkit (PDT) is a framework for analyzing source code written in several pro
+#gramming languages and for making rich program knowledge accessible to developers of static and dynamic analys
+#is tools.
+
+#setenv PDT_HOME	$IBS_APPS_DIR/\$env(COMPILER)/\$env(COMPILER_VER)/$IBS_TOOL_NAME/$IBS_TOOL_VERSION
+#prepend-path 	PATH 		\$env(PDT_HOME)/x86_64/bin
+#prepend-path 	LD_LIBRARY_PATH \$env(PDT_HOME)/x86_64/lib
+#EOF
+#}
+
+##############################################################################

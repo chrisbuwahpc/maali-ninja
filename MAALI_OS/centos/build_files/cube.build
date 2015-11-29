@@ -1,0 +1,33 @@
+##############################################################################
+# $Id: cube.maali,v 1.6 2013/12/16 07:44:17 stapops Exp $
+##############################################################################
+# maali config file for cube
+##############################################################################
+
+# specify which compilers we want to build the tool with
+MAALI_TOOL_COMPILERS="$MAALI_DEFAULT_GCC_COMPILERS"
+
+# URL to download the source code from
+MAALI_URL="http://apps.fz-juelich.de/scalasca/releases/$MAALI_TOOL_NAME/3.4/dist/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# location we are downloading the source code to
+MAALI_DST="$MAALI_SRC/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION.tar.gz"
+
+# where the unpacked source code is located
+MAALI_TOOL_BUILD_DIR="$MAALI_BUILD_DIR/$MAALI_TOOL_NAME-$MAALI_TOOL_VERSION"
+
+# type of tool (eg. apps, devel, python, etc.)
+MAALI_TOOL_TYPE="tools"
+
+# tool pre-requisites 
+MAALI_TOOL_PREREQ="qt/4.8.4 $MAALI_DEFAULT_OPENMPI"
+
+# add additional configure options
+MAALI_TOOL_CONFIGURE='--with-qmake=$Qt_ROOT/bin/qmake --force-64'
+
+# for auto-building module files
+MAALI_MODULE_SET_PATH=1
+MAALI_MODULE_SET_LD_LIBRARY_PATH=1
+MAALI_MODULE_WHATIS='CUBE (CUBE Uniform Behavioral Encoding)'
+
+##############################################################################
